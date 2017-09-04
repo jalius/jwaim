@@ -1,4 +1,4 @@
-# jwaim
+# jwaim - csgo multi-cheat for linux
 this is a cheat for the 64 bit linux csgo (tested on ubuntu 17.04)
 
 
