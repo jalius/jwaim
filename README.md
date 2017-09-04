@@ -33,5 +33,11 @@ gksudo ./jwaim
 NOTE:
 please make sure you have settings.cfg in the same directory as your current working directory (when you execute the application), otherwise you will experience problems with libconfig.
 
+# Cheat Features
+BHop
+Aim Assist
+Glow
+RCS
+ESP - Boxes, Health, Line To Player
 
 ![Alt text](http://i.imgur.com/g2IU45i.jpg "screenshot")
