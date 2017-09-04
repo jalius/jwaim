@@ -1,5 +1,5 @@
 # jwaim
-this is a cheat for the 64 bit linux csgo (tested on ubuntu 14.04, 16.04, and 17.04)
+this is a cheat for the 64 bit linux csgo (tested on ubuntu 17.04)
 
 
 install additional dependencies:
