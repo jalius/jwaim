@@ -35,9 +35,13 @@ please make sure you have settings.cfg in the same directory as your current wor
 
 # Cheat Features
 BHop
+
 Aim Assist
+
 Glow
+
 RCS
+
 ESP - Boxes, Health, Line To Player
 
 ![Alt text](http://i.imgur.com/g2IU45i.jpg "screenshot")
