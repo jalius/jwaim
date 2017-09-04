@@ -39,6 +39,6 @@ Aim Assist
 Glow  
 RCS  
 RCS Crosshair  
-ESP - Boxes, Health, Line To Player, Player Status (Scoped/Defusing)  **
+ESP - Boxes, Health, Line To Player, Player Status (Scoped/Defusing)**
 
 ![Alt text](http://i.imgur.com/g2IU45i.jpg "screenshot")
