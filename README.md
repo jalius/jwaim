@@ -37,7 +37,8 @@ please make sure you have settings.cfg in the same directory as your current wor
 **BHop  
 Aim Assist  
 Glow  
-RCS  
+FOV Changer  
+RCS
 RCS Crosshair  
 ESP** - Boxes, Health, Line To Player, Player Status (Scoped/Defusing)
 
