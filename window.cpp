@@ -3,6 +3,8 @@ int i = 0;
 qWindow::qWindow(QWidget *parent) : QWidget(parent)
 {
     QSize size = qApp->screens()[0]->size();
+    settings::wind_height = size.height();
+    settings::wind_width = size.width();
     setGeometry(settings::wind_x,settings::wind_y,settings::wind_width,settings::wind_height);
     setAutoFillBackground(false);
     //setWindowFlags(Qt::X11BypassWindowManagerHint);

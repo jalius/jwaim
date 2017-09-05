@@ -545,29 +545,31 @@ void hack::setHands(){
     }
 }
 void hack::setFov(){
-    /*if(viewFov==0){
+    if(viewFov==0){
         return;
     }
-    int scope1 = viewFov/2;
-    int scope2 = viewFov/3;
+    int scope1 = viewFov-30;
+    int scope2 = viewFov-30*2;
     int isScoped = 0;
+    int iFOV = 0;
     unsigned long localPlayer = 0;
     csgo.Read((void*) m_addressOfLocalPlayer, &localPlayer, sizeof(long));
-    csgo.Read((void*)(localPlayer+0x4164), &isScoped, sizeof(long));
+    csgo.Read((void*)(localPlayer+offsets::m_bIsScoped), &isScoped, sizeof(long));
+    csgo.Read((void*)localPlayer+offsets::m_iFOV,&iFOV,sizeof(int));
+    if(iFOV!=viewFov){
     if(isScoped==0){
-        csgo.Write((void*)(localPlayer+offsets::m_iFOVStart-4), &viewFov, sizeof(long));
+        csgo.Write((void*)(localPlayer+offsets::m_iFOV), &viewFov, sizeof(long));        
+        //csgo.Write((void*)(localPlayer+offsets::m_iFOVStart), &viewFov, sizeof(long));
         //csgo.Write((void*)(localPlayer+0x399C), &viewFov, sizeof(float));
         //csgo.Write((void*)(localPlayer+0x3B14), &viewFov, sizeof(float));
     }
-    else if(isScoped==1){
-        csgo.Write((void*)(localPlayer+offsets::m_iFOVStart), &scope1, sizeof(long));
-    }
-    else if (isScoped==2){
-        csgo.Write((void*)(localPlayer+offsets::m_iFOVStart), &scope2, sizeof(long));
+    /*else if(isScoped==1){
+        csgo.Write((void*)(localPlayer+offsets::m_iFOV), &scope1, sizeof(long));
     }
     else{
-        csgo.Write((void*)(localPlayer+offsets::m_iFOVStart), &viewFov, sizeof(long));
+        csgo.Write((void*)(localPlayer+offsets::m_iFOV), &viewFov, sizeof(long));
     }*/
+    }
 }
 bool hack::glow(){
     if(!hack::isConnected){

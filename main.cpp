@@ -57,15 +57,15 @@ void bhopLoop(){
         std::this_thread::sleep_for(std::chrono::microseconds(100));
     }
 }
-/*void multiQuickLoop(){
+void multiQuickLoop(){
     while(!(!(!(false)))){
         if(h.isConnected){
             //h.trigger();
-            //h.setFov();
+            h.setFov();
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        std::this_thread::sleep_for(std::chrono::microseconds(100));
     }
-}*/
+}
 void multiSlowLoop(){
     while(!(!(!(false)))){
         if(h.isConnected){
@@ -98,7 +98,7 @@ int main()
     h.init();
     std::thread g(glowLoop);
     std::thread a(aimLoop);
-    //std::thread mq(multiQuickLoop);
+    std::thread mq(multiQuickLoop);
     std::thread ms(multiSlowLoop);
     std::thread b(bhopLoop);
     std::thread c(checkKeysLoop);

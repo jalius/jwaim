@@ -42,14 +42,20 @@ Vector WorldToScreen_(Vector &camerapos,Vector &enemy, QAngle &myvang, float FOV
     Vector newCameraPos(camerapos.x,camerapos.z,camerapos.y);
     point -= newCameraPos;
     QAngle myVang = myvang;
-    float magical = 1.3; //just found this thru trial and error, its used to grow or shrink the focallength (for some reason it is needed on my 4:3 monitor because otherwise i get inaccurate focal length.
+    float magical = 1.2; //just found this thru trial and error, its used to grow or shrink the focallength (for some reason it is needed on my 4:3 AND 16:9 monitor because otherwise i get inaccurate focal length). if you are using 4:3 stretched on 16:9 a value of 1.52 works best.
     myVang.y+=90;
-    if(FOV == 0){
-        //FOV=90;
+    //std::cout<<" width: "<<settings::wind_width<<" height: "<<settings::wind_height<<" ratio "<<settings::wind_width/settings::wind_height<<std::endl;
+    if(FOV >= 90&&FOV<110){
+     magical = 1.224489796;
     }
-    if(FOV >= 90){
-        magical = 1.224489796;
+    else if(FOV>=110&&FOV<130){
+        magical = 1.15;
     }
+    else{
+     magical=1.3;
+    }
+    FOV/=magical;
+    //std::cout<<"FOV "<<FOV<<std::endl;
     float cosX = cosf((M_PI/180)*myVang.x);
     float cosY = cosf((M_PI/180)*myVang.y);
     float cosZ = cosf((M_PI/180)*myVang.z);
@@ -74,7 +80,7 @@ Vector WorldToScreen_(Vector &camerapos,Vector &enemy, QAngle &myvang, float FOV
     rotatedPoint.y = matrix[1][0] * point.x + matrix[1][1] * point.y + matrix[1][2] * point.z;
     rotatedPoint.z = matrix[2][0] * point.x + matrix[2][1] * point.y + matrix[2][2] * point.z;
 
-    float focalLength= (settings::wind_height / 2) / tanf((M_PI/180)*(FOV/magical) / 2);
+    float focalLength= (settings::wind_height / 2) / tanf((M_PI/180)*(FOV) / 2);
     //std::cout<<"focalL "<<focalLength<<" fov "<<FOV<<std::endl;
     Vector scrPos;
     scrPos.x = focalLength * rotatedPoint.x / rotatedPoint.z + settings::wind_width/2;
