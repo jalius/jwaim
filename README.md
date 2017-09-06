@@ -1,8 +1,10 @@
 # jwaim - csgo multi-cheat for linux
 this is a cheat for the 64 bit linux csgo (tested on ubuntu 17.04)  
-this cheat utilizes QT graphics library to draw ESP and other info on screen
+this cheat utilizes QT graphics library to draw ESP and other info on screen  
+I uploaded it here to share with anyone interested, and mainly just so that I don't lose track of it. I hope anyone who finds this can find it useful for learning or for fun.   
+Thanks to every helpful person at unknowncheats!
 
-
+# installing and running
 install additional dependencies:
 ```bash
 apt-get install libboost-all-dev libx11-dev libx11-dev:i386 libxtst-dev libconfig++-dev build-essential qt5-default
