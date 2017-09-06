@@ -1,5 +1,6 @@
 # jwaim - csgo multi-cheat for linux
 this is a cheat for the 64 bit linux csgo (tested on ubuntu 17.04)
+this cheat utilizes QT graphics library to draw ESP and other info on screen
 
 
 install additional dependencies:
@@ -38,7 +39,7 @@ please make sure you have settings.cfg in the same directory as your current wor
 Aim Assist  
 Glow  
 FOV Changer  
-RCS
+RCS  
 RCS Crosshair  
 ESP** - Boxes, Health, Line To Player, Player Status (Scoped/Defusing)
 
