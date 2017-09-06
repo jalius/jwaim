@@ -1,5 +1,5 @@
 # jwaim - csgo multi-cheat for linux
-this is a cheat for the 64 bit linux csgo (tested on ubuntu 17.04)
+this is a cheat for the 64 bit linux csgo (tested on ubuntu 17.04)  
 this cheat utilizes QT graphics library to draw ESP and other info on screen
 
 
