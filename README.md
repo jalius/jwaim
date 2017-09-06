@@ -38,7 +38,7 @@ please make sure you have settings.cfg in the same directory as your current wor
 Aim Assist  
 Glow  
 FOV Changer  
-RCS
+RCS  
 RCS Crosshair  
 ESP** - Boxes, Health, Line To Player, Player Status (Scoped/Defusing)
 
