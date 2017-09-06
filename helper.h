@@ -9,7 +9,7 @@
 #include "offsets.h"
 #include "remote.h"
 #include "settings.h"
-
+#include "atomic"
 namespace helper
 {
         bool WorldToScreen(const Vector &vecOrigin, Vector &vecScreen, float *pflViewMatrix );
@@ -25,6 +25,7 @@ namespace helper
         Vector WorldToScreen_(Vector &camerapos,Vector &enemy, QAngle &myvang, float FOV);
         float fShootDistance(int bone);
         Vector RecoilCrosshair(QAngle &vpunch, float FOV);
+        std::string AtomicBoolToString(std::atomic<bool> *b);
 }
 
 #endif // HELPER_H

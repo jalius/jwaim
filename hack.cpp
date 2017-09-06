@@ -18,6 +18,13 @@ unsigned int offsets::m_iObserveCamType = 0x3b50; //int 4 1st person, 5 3rd pers
 
 
 
+bool hack::IsConnected(){
+  return isConnected;
+}
+double *hack::Colors(){
+  return colors;
+}
+
 void hack::readEntities(std::array<EntityInfo,64> &rentities){
     // get shared access
     boost::shared_lock<boost::shared_mutex> lock(entities_access);
@@ -37,7 +44,7 @@ void hack::writeEntities(std::array<EntityInfo,64> &wentities){
 }
 
 bool hack::getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &rcsCross){
-    if(!hack::isConnected||!esp){
+    if(!hack::isConnected||!ShouldESP){
         return false;
     }
     int observeCamType = 0;
@@ -181,7 +188,7 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &r
     }
     return true;
 }
-void hack::setIsConnected(){
+void hack::setupIsConnected(){
     uint8_t isConnected = 0;
     //cout<<"hack adriscon: "<<hack::addressIsConnected<<endl;
     csgo.Read((void*)hack::addressIsConnected,&isConnected,sizeof(uint8_t));
@@ -195,6 +202,19 @@ void hack::setIsConnected(){
 
 void hack::aim(){
     if(!hack::isConnected){
+        return;
+    }
+    if(!hack::ShouldAimAssist){
+        int AltTwo = 4;
+        csgo.Read((void*)m_addressOfAlt2,&AltTwo,sizeof(long));
+        if(AltTwo==5){
+            csgo.Write((void*)m_addressOfForceAttack,&toggleOn,sizeof(int));
+            usleep(10000);
+        }
+        else if (AltTwo==4){
+            csgo.Write((void*)m_addressOfForceAttack,&toggleOff,sizeof(int));
+            usleep(100);
+        }
         return;
     }
     QAngle newAngle;
@@ -263,7 +283,7 @@ void hack::aim(){
     myPos.y = myEnt.m_vecNetworkOrigin.y;
     myPos.z = myEnt.m_vecNetworkOrigin.z + myEnt.m_vecViewOffset.z;
 
-    if(!isAiming||rage){//if we aren't aiming or are in rage mode...
+    if(!isAiming||ShouldRage){//if we aren't aiming or are in rage mode...
         idclosestEnt=0;
         //aimbot block
         for(int i = 1;i<64;i++){
@@ -289,7 +309,7 @@ void hack::aim(){
                     closestBone = hack::getClosestBone((unsigned long)m_pStudioBones, hack::bones, viewAngle, punch, myPos);
                 }*/
                 csgo.Read((void*)entPtr+offsets::m_pStudioBones,&m_pStudioBones,sizeof(int));
-                closestBone = hack::getClosestBone((unsigned long)m_pStudioBones, hack::bones, viewAngle, punch, myPos);
+                closestBone = hack::getClosestBone((unsigned long)m_pStudioBones, hack::preferredBones, viewAngle, punch, myPos);
                 csgo.Read(m_pStudioBones+closestBone*sizeof(BoneMatrix),&theirBones,sizeof(BoneMatrix));
                 theirPos.x = theirBones.x;
                 theirPos.y = theirBones.y;
@@ -350,7 +370,7 @@ void hack::aim(){
             closestBone = hack::getClosestBone((unsigned long)m_pStudioBones, hack::bones, viewAngle, punch, myPos);
         }*/
         csgo.Read(entitiesCopy[idclosestEnt].entityPtr+offsets::m_pStudioBones,&m_pStudioBones,sizeof(long));
-        closestBone = hack::getClosestBone((unsigned long)m_pStudioBones, hack::bones, viewAngle, punch, myPos);
+        closestBone = hack::getClosestBone((unsigned long)m_pStudioBones, hack::preferredBones, viewAngle, punch, myPos);
         shootDistance  = helper::fShootDistance(closestBone);
         //cout<<"closest bone "<<closestBone<<endl;
         csgo.Read((void*)m_pStudioBones+closestBone*sizeof(BoneMatrix),&theirBones,sizeof(BoneMatrix));
@@ -398,8 +418,8 @@ void hack::aim(){
     }
 
     //rcs block
-    if(!isAiming&&alwaysRCS){
-        if(alwaysRCS){
+    if(!isAiming&&ShouldRCS){
+        if(ShouldRCS){
             if((punchDelta.y!=0.0||punchDelta.x!=0.0)&&(shotsFired>1)){
                 //seeout<<shotsFired<<endl;
                 newAngle.x -=punchDelta.x*2;//new camera angle is the old camera angle minus the change in view punch angle *2 (because it works)
@@ -530,7 +550,7 @@ void hack::bhop(){
     }
 }
 void hack::noFlash(){
-    if(NoFlash){
+    if(ShouldNoFlash){
         unsigned long localPlayer = 0;
         csgo.Read((void*) m_addressOfLocalPlayer, &localPlayer, sizeof(long));
         csgo.Write((void*)(localPlayer+offsets::m_fFlashMaxAlpha), &flashMax, sizeof(float));
@@ -628,21 +648,9 @@ bool hack::glow(){
                     g_glow[i].m_bRenderWhenUnoccluded = 0;
                     continue;
                 }
-                entityInCrossHair = false;
-
-                if (localPlayer != 0) {
-                    if (ent.m_iTeamNum != teamNumber) {
-                        unsigned int crossHairId = 0;
-                        unsigned int entityId = 0;
-                        csgo.Read((void*) (localPlayer+0xBBD8), &crossHairId, sizeof(int)); // 0xB390 => 0xB3A0 => 0xB398 => 0xBBD8// +0x7C avec m_bhasdefuser
-                        csgo.Read((void*) (g_glow[i].m_pEntity + 0x94), &entityId, sizeof(int));
-
-                        if (crossHairId == entityId) {
-                            entityInCrossHair = true;
-                        }
-                    }
+                if(ShouldRadarHack){
+                  csgo.Write((void*) ((unsigned long) g_glow[i].m_pEntity + 0xECD), &spotted, sizeof(unsigned char));
                 }
-                csgo.Write((void*) ((unsigned long) g_glow[i].m_pEntity + 0xECD), &spotted, sizeof(unsigned char));
 
                 if (ent.m_iTeamNum == 2 || ent.m_iTeamNum == 3) {
                     if(ent.ID<=64&&ent.ID>0){
@@ -758,28 +766,36 @@ bool hack::checkKeys(){
                         const int code = i * 8 + j;
                         if (code == keycodeGlow) {
                             ShouldGlow = !ShouldGlow;
-                            std::cout<<"ESP: "<<ShouldGlow<<endl;
+                            std::cout<<"Glow: "<<ShouldGlow<<endl;
                         }
                         else if (code == keycodeBhop){
                             ShouldBhop = !ShouldBhop;
                             std::cout<<"Bhop: "<< ShouldBhop<<endl;
                         }
                         else if (code==keycodeNoFlash){
-                            NoFlash = !NoFlash;
-                            std::cout<<"NoFlash: "<<NoFlash<<endl;
+                            ShouldNoFlash = !ShouldNoFlash;
+                            std::cout<<"NoFlash: "<<ShouldNoFlash<<endl;
                         }
                         else if (code==keycodeRCS){
-                            alwaysRCS=!alwaysRCS;
-                            cout<<"AlwaysRCS: "<<alwaysRCS<<endl;
+                            ShouldRCS=!ShouldRCS;
+                            cout<<"AlwaysRCS: "<<ShouldRCS<<endl;
                         }
                         else if (code==keycodeRage){
-                            rage=!rage;
-                            cout<<"RAGE: "<<rage<<endl;
+                            ShouldRage=!ShouldRage;
+                            cout<<"RAGE: "<<ShouldRage<<endl;
                         }
                         else if(code==keycodeESP){
-                            esp=!esp;
-                            cout<<"ESP: "<<esp<<endl;
+                            ShouldESP=!ShouldESP;
+                            cout<<"ESP: "<<ShouldESP<<endl;
                         }
+                        else if(code ==keycodeRadarHack){
+                            ShouldRadarHack =!ShouldRadarHack;
+                            cout<<"Radar: "<<ShouldRadarHack<<endl;
+                       }
+                       else if(code ==keycodeAim){
+                            ShouldAimAssist =!ShouldAimAssist;
+                            cout<<"Aim: "<<ShouldAimAssist<<endl;
+                       }
                     }
                 }
             }
@@ -812,18 +828,37 @@ void hack::init(){
         cout<<ss.str()<<endl;
     }
     //configure our custom settings from settings.cfg
-    keycodeGlow = XKeysymToKeycode(hack::display, XStringToKeysym(helper::getConfigValue("ToggleGlow",cfg).c_str()));
-    cout << "Glow Toggle = " << helper::getConfigValue("ToggleGlow",cfg).c_str() << " Keycode: " << keycodeGlow << endl;
-    keycodeESP = XKeysymToKeycode(hack::display, XStringToKeysym(helper::getConfigValue("ToggleESP",cfg).c_str()));
-    cout << "ESP Toggle = " << helper::getConfigValue("ToggleESP",cfg).c_str() << " Keycode: "<<keycodeESP<<endl;
-    keycodeBhop = XKeysymToKeycode(hack::display, XStringToKeysym(helper::getConfigValue("ToggleBhop",cfg).c_str()));
-    cout << "Bhop Toggle = " << helper::getConfigValue("ToggleBhop",cfg).c_str() <<" Keycode: " <<keycodeBhop<< endl;
-    keycodeNoFlash = XKeysymToKeycode(hack::display, XStringToKeysym(helper::getConfigValue("ToggleNoFlash",cfg).c_str()));
-    cout << "NoFlash Toggle = " << helper::getConfigValue("ToggleNoFlash",cfg).c_str() <<" Keycode: " <<keycodeNoFlash<< endl;
-    keycodeRCS = XKeysymToKeycode(hack::display, XStringToKeysym(helper::getConfigValue("ToggleRCS",cfg).c_str()));
-    cout << "RCS Toggle = " << helper::getConfigValue("ToggleRCS",cfg).c_str() <<" Keycode: " <<keycodeNoFlash<< endl;
-    keycodeRage = XKeysymToKeycode(hack::display, XStringToKeysym(helper::getConfigValue("ToggleRage",cfg).c_str()));
-    cout << "Rage Toggle = " << helper::getConfigValue("ToggleRage",cfg).c_str() <<" Keycode: " <<keycodeNoFlash<< endl;
+    hack::ShouldGlowToggleKey = helper::getConfigValue("ToggleGlow",cfg);
+    keycodeGlow = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldGlowToggleKey.c_str()));
+    cout << "Glow Toggle = " << hack::ShouldGlowToggleKey.c_str() << " Keycode: " << keycodeGlow << endl;
+
+    hack::ShouldESPToggleKey = helper::getConfigValue("ToggleESP",cfg);
+    keycodeESP = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldESPToggleKey.c_str()));
+    cout << "ESP Toggle = " << hack::ShouldESPToggleKey.c_str() << " Keycode: "<<keycodeESP<<endl;
+
+    hack::ShouldBhopToggleKey = helper::getConfigValue("ToggleBhop",cfg);
+    keycodeBhop = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldBhopToggleKey.c_str()));
+    cout << "Bhop Toggle = " << hack::ShouldBhopToggleKey.c_str() <<" Keycode: " <<keycodeBhop<< endl;
+
+    hack::ShouldNoFlashToggleKey = helper::getConfigValue("ToggleNoFlash",cfg);
+    keycodeNoFlash = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldNoFlashToggleKey.c_str()));
+    cout << "NoFlash Toggle = " << hack::ShouldNoFlashToggleKey.c_str() <<" Keycode: " <<keycodeNoFlash<< endl;
+
+    hack::ShouldRCSToggleKey = helper::getConfigValue("ToggleRCS",cfg);
+    keycodeRCS = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldRCSToggleKey.c_str()));
+    cout << "RCS Toggle = " << hack::ShouldRCSToggleKey.c_str() <<" Keycode: " <<keycodeRCS<< endl;
+
+    hack::ShouldRageToggleKey = helper::getConfigValue("ToggleRage",cfg);
+    keycodeRage = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldRageToggleKey.c_str()));
+    cout << "Rage Toggle = " << hack::ShouldRageToggleKey.c_str() <<" Keycode: " <<keycodeRage<< endl;
+
+    hack::ShouldRadarHackToggleKey = helper::getConfigValue("ToggleRadarHack",cfg);
+    keycodeRadarHack = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldRadarHackToggleKey.c_str()));
+    cout << "Radar Toggle = " << hack::ShouldRadarHackToggleKey.c_str() <<" Keycode: " <<keycodeRadarHack<< endl;
+
+    hack::ShouldAimAssistToggleKey = helper::getConfigValue("ToggleAimHack",cfg);
+    keycodeAim = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldAimAssistToggleKey.c_str()));
+    cout << "Radar Toggle = " << hack::ShouldAimAssistToggleKey.c_str() <<" Keycode: " <<keycodeAim<< endl;
 
     double enemyRed = ::atof(helper::getConfigValue("enemyRed",cfg).c_str());
     double enemyGreen = ::atof(helper::getConfigValue("enemyGreen",cfg).c_str());
@@ -1006,13 +1041,14 @@ void hack::init(){
     cout<<"offsets::m_iFOV: "<<offsets::m_iFOV<<endl;
     //settings
     ShouldGlow = false;
-    //ShouldTrigger = false;
+    ShouldRadarHack = true;
     ShouldBhop = false;
-    esp = true;
-    NoFlash = true;
-    rage=false;
-    alwaysRCS = false;
-    bone = ::atof(helper::getConfigValue("bone",cfg).c_str());
+    ShouldESP = true;
+    ShouldNoFlash = true;
+    ShouldRage=false;
+    ShouldRCS = false;
+    ShouldAimAssist=true;
+    preferredBone = ::atof(helper::getConfigValue("bone",cfg).c_str());
     fov = ::atof(helper::getConfigValue("fov",cfg).c_str());
     flashMax = ::atof(helper::getConfigValue("flash_max",cfg).c_str());
     viewFov = ::atof(helper::getConfigValue("custom_fov",cfg).c_str());
@@ -1049,11 +1085,9 @@ void hack::init(){
 
     spotted = 1;
     entityInCrossHair = false;
-    settings::wind_height = 1200;
-    settings::wind_width = 1600;
-    bones.reserve(8);
-    bones.push_back(6);
-    bones.push_back(7);
-    bones.push_back(8);
-    bones.push_back(0);
+    preferredBones.reserve(8);
+    preferredBones.push_back(6);
+    preferredBones.push_back(7);
+    preferredBones.push_back(8);
+    preferredBones.push_back(0);
 }

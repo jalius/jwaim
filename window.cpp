@@ -1,11 +1,12 @@
 #include "window.h"
+
 int i = 0;
 qWindow::qWindow(QWidget *parent) : QWidget(parent)
 {
     QSize size = qApp->screens()[0]->size();
-    settings::wind_height = size.height();
-    settings::wind_width = size.width();
-    setGeometry(settings::wind_x,settings::wind_y,settings::wind_width,settings::wind_height);
+    settings::window::wind_height = size.height();
+    settings::window::wind_width = size.width();
+    setGeometry(settings::window::wind_x,settings::window::wind_y,settings::window::wind_width,settings::window::wind_height);
     setAutoFillBackground(false);
     //setWindowFlags(Qt::X11BypassWindowManagerHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -21,7 +22,7 @@ void qWindow::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(105,225,225, 0));
-    painter.drawRect(settings::wind_x,settings::wind_y,settings::wind_width,settings::wind_height);
+    painter.drawRect(settings::window::wind_x,settings::window::wind_y,settings::window::wind_width,settings::window::wind_height);
 
     QPen pen;
     pen.setStyle(Qt::SolidLine);
@@ -29,7 +30,7 @@ void qWindow::paintEvent(QPaintEvent *)
     pen.setColor(QColor(255,255,255,255));
     pen.setCapStyle(Qt::RoundCap);
     painter.setPen(pen);
-    QFont font("DroidSansBold", 8, QFont::Bold, false);
+    QFont font("DroidSansBold", 7, QFont::Bold, false);
     painter.setFont(font);
     /*if(i<width())
     {
@@ -39,8 +40,48 @@ void qWindow::paintEvent(QPaintEvent *)
     {
         i = 0;
     }*/
-    painter.drawText(10,10,100,50,0,"JWAim");
-    if(h.isConnected&&h.esp){
+    painter.drawText(10,15,"JWAim");
+    font.setPointSize(6);
+
+    QColor redFalse(255,050,05);
+    QColor greenTrue(050, 255, 05);
+    painter.setFont(font);
+
+    pen.setColor(h.ShouldRadarHack?greenTrue:redFalse);
+    painter.setPen(pen);
+    painter.drawText(12, 25, (h.ShouldRadarHackToggleKey + " RadarHack: " + helper::AtomicBoolToString(&h.ShouldRadarHack)).c_str());
+
+    pen.setColor(h.ShouldGlow?greenTrue:redFalse);
+    painter.setPen(pen);
+    painter.drawText(12,35,(h.ShouldGlowToggleKey + " Glow: "+helper::AtomicBoolToString(&h.ShouldGlow)).c_str());
+
+    pen.setColor(h.ShouldESP?greenTrue:redFalse);
+    painter.setPen(pen);
+    painter.drawText(12,45,(h.ShouldESPToggleKey + " ESP: "+helper::AtomicBoolToString(&h.ShouldESP)).c_str());
+
+    pen.setColor(h.ShouldBhop?greenTrue:redFalse);
+    painter.setPen(pen);
+    painter.drawText(12, 55, (h.ShouldBhopToggleKey + " BHop: " + helper::AtomicBoolToString(&h.ShouldBhop)).c_str());
+
+    pen.setColor(h.ShouldAimAssist?greenTrue:redFalse);
+    painter.setPen(pen);
+    painter.drawText(12, 65, (h.ShouldAimAssistToggleKey + " AimAssist: " + helper::AtomicBoolToString(&h.ShouldAimAssist)).c_str());
+
+    pen.setColor(h.ShouldRage?greenTrue:redFalse);
+    painter.setPen(pen);
+    painter.drawText(12, 75, (h.ShouldRageToggleKey + " Rage: "+helper::AtomicBoolToString(&h.ShouldRage)).c_str());
+
+    pen.setColor(h.ShouldNoFlash?greenTrue:redFalse);
+    painter.setPen(pen);
+    painter.drawText(12, 85, (h.ShouldNoFlashToggleKey + " No Flash: "+helper::AtomicBoolToString(&h.ShouldNoFlash)).c_str());
+
+    pen.setColor(h.ShouldRCS?greenTrue:redFalse);
+    painter.setPen(pen);
+    painter.drawText(12, 95, (h.ShouldRCSToggleKey + " RCS: "+helper::AtomicBoolToString(&h.ShouldRCS)).c_str());
+
+    pen.setColor(QColor(255,255,255));
+    painter.setPen(pen);
+    if(h.IsConnected()&&h.ShouldESP){
         for(int i = 0;i<64;i++)
         {
             if(entitiesToScreen[i].origin.x==0&&entitiesToScreen[i].origin.y==0){//||entitiesToScreen[i].origin.x>width*2||entitiesToScreen[i].origin.y>height*2){
@@ -54,16 +95,16 @@ void qWindow::paintEvent(QPaintEvent *)
             }
             pen.setWidth(2);
             if(entitiesToScreen[i].myTeam&&!h.shootFriends){
-                pen.setColor(QColor(h.colors[16]*255,h.colors[17]*255,h.colors[18]*255,255));
+                pen.setColor(QColor(h.Colors()[16]*255,h.Colors()[17]*255,h.Colors()[18]*255,255));
                 painter.setPen(pen);
             }
             else{
-                pen.setColor(QColor(h.colors[12]*255,h.colors[13]*255,h.colors[14]*255,255));
+                pen.setColor(QColor(h.Colors()[12]*255,h.Colors()[13]*255,h.Colors()[14]*255,255));
                 painter.setPen(pen);
             }
             //qInfo() << "positions[i].x "<<positions[i].second.x<<" positions[i].y "<<positions[i].second.y;
             painter.drawRect(entitiesToScreen[i].origin.x-fwidth/2,entitiesToScreen[i].origin.y,fwidth,fheight);
-            pen.setColor(QColor(h.colors[20],h.colors[21],h.colors[22],h.colors[23]));
+            pen.setColor(QColor(h.Colors()[20],h.Colors()[21],h.Colors()[22],h.Colors()[23]));
             painter.setPen(pen);
             font.setBold(true);
             font.setFamily("LiberationSansBold");
@@ -81,7 +122,7 @@ void qWindow::paintEvent(QPaintEvent *)
                 std::string defusing = entitiesToScreen[i].defusing?"Defusing":"";
                 painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.45,1000,1000,0,defusing.c_str());
 
-                painter.drawLine(entitiesToScreen[i].origin.x,entitiesToScreen[i].origin.y,settings::wind_width*settings::cofLineTetherX,settings::wind_height*settings::cofLineTetherY);
+                painter.drawLine(entitiesToScreen[i].origin.x,entitiesToScreen[i].origin.y,settings::window::wind_width*settings::window::cofLineTetherX,settings::window::wind_height*settings::window::cofLineTetherY);
 
                 //helper::clampAngle(&entitiesToScreen[i].entityInfo.entity.m_angNetworkAngles);
                 //if(fabsf(entitiesToScreen[i].lby-entitiesToScreen[i].entityInfo.entity.m_angNetworkAngles.y)>35){
@@ -90,25 +131,25 @@ void qWindow::paintEvent(QPaintEvent *)
             }
             }
             else if(entitiesToScreen[i].origin.z==-1&&!entitiesToScreen[i].myTeam){
-                pen.setColor(QColor(h.colors[20],h.colors[21],h.colors[22],h.colors[23]));
+                pen.setColor(QColor(h.Colors()[20],h.Colors()[21],h.Colors()[22],h.Colors()[23]));
                 painter.setPen(pen);
-                painter.drawLine(entitiesToScreen[i].origin.x,entitiesToScreen[i].origin.y,settings::wind_width*settings::cofLineTetherX,settings::wind_height*settings::cofLineTetherY);
+                painter.drawLine(entitiesToScreen[i].origin.x,entitiesToScreen[i].origin.y,settings::window::wind_width*settings::window::cofLineTetherX,settings::window::wind_height*settings::window::cofLineTetherY);
             }
         }
         if(!(rcsCross.x==0&&rcsCross.y==0)){
         if(h.drawrcsCrosshair){
-            pen.setColor(QColor(h.colors[20],h.colors[21],h.colors[22],h.colors[23]));
+            pen.setColor(QColor(h.Colors()[20],h.Colors()[21],h.Colors()[22],h.Colors()[23]));
             pen.setWidthF(1.8);
             painter.setPen(pen);
             painter.drawLine(rcsCross.x+5,rcsCross.y,rcsCross.x-5,rcsCross.y);
             painter.drawLine(rcsCross.x,rcsCross.y+5,rcsCross.x,rcsCross.y-5);
         }
         else if(h.staticCrosshair){
-            pen.setColor(QColor(h.colors[20],h.colors[21],h.colors[22],h.colors[23]));
+            pen.setColor(QColor(h.Colors()[20],h.Colors()[21],h.Colors()[22],h.Colors()[23]));
             pen.setWidthF(1.8);
             painter.setPen(pen);
-            int middleX = settings::wind_width/2;
-            int middleY = settings::wind_height/2;
+            int middleX = settings::window::wind_width/2;
+            int middleY = settings::window::wind_height/2;
             painter.drawLine(middleX,middleY+5,middleX,middleY-5);
             painter.drawLine(middleX+5,middleY,middleX-5,middleY);
         }

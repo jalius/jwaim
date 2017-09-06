@@ -1,6 +1,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
-
+#include <sstream>
 #include <qtextstream.h>
 #include <QWidget>
 #include <QDebug>

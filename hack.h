@@ -117,17 +117,54 @@ public:
     void aim();
     void setFov();
     void setHands();
+    void setupIsConnected();
+    bool IsConnected();
+    double *Colors();
+    //settings
+    Config cfg;
+    //togglable settings
 
+    std::atomic<bool> ShouldGlow;
+    std::string ShouldGlowToggleKey;
+    std::atomic<bool> ShouldBhop;
+    std::string ShouldBhopToggleKey;
+    std::atomic<bool> ShouldNoFlash;
+    std::string ShouldNoFlashToggleKey;
+    std::atomic<bool> ShouldRCS;
+    std::string ShouldRCSToggleKey;
+    std::atomic<bool> ShouldESP;
+    std::string ShouldESPToggleKey;
+    std::atomic<bool> ShouldRage;
+    std::string ShouldRageToggleKey;
+    std::atomic<bool> ShouldRadarHack;
+    std::string ShouldRadarHackToggleKey;
+    std::atomic<bool> ShouldAimAssist;
+    std::string ShouldAimAssistToggleKey;
+    //runtime set settings
+    int preferredBone;
+    std::vector<int> preferredBones;
+    float flashMax;
+    float fov;
+    float percentSmoothing;
+    int viewFov;
+    bool noHands;
+    bool resolver;
+    bool shootFriends;
+    bool legitGlow;
+    bool drawrcsCrosshair;
+    bool staticCrosshair;
+    //end settings
+    bool getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &rcsCross);
+
+private:
     void setVAng(QAngle *newAngle, unsigned long addressOfViewAngle);
-    int getClosestBone(unsigned long m_pStudioBones, std::vector<int> &bones, QAngle &curViewAngle, QAngle &aimPunch, Vector &myPos);
+    int getClosestBone(unsigned long m_pStudioBones, std::vector<int> &preferredBones, QAngle &curViewAngle, QAngle &aimPunch, Vector &myPos);
     int getLifeState(unsigned long entityPtr);
 
-    void setIsConnected();
     std::atomic<bool> isConnected;
 
     void readEntities(std::array<EntityInfo,64> &rentities);
     void writeEntities(std::array<EntityInfo,64> &wentities);
-    bool getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &rcsCross);
 
     boost::shared_mutex entities_access;
     std::array<EntityInfo,64> entities;
@@ -150,6 +187,8 @@ public:
     int keycodeRage;
     int keycodeRCS;
     int keycodeESP;
+    int keycodeRadarHack;
+    int keycodeAim;
     unsigned char spotted;
     int toggleOn = 5;
     int toggleOff = 4;
@@ -168,29 +207,6 @@ public:
     unsigned long addressServerDetail;
     unsigned long addressIsConnected;
 
-    //settings
-    Config cfg;
-    //toggles start
-    bool ShouldGlow;
-    bool ShouldTrigger;
-    bool ShouldBhop;
-    bool NoFlash;
-    bool alwaysRCS;
-    bool esp;
-    bool rage;
-    //toggles end
-    int bone;
-    std::vector<int> bones;
-    float flashMax;
-    float fov;
-    float percentSmoothing;
-    int viewFov;
-    bool noHands;
-    bool resolver;
-    bool shootFriends;
-    bool legitGlow;
-    bool drawrcsCrosshair;
-    bool staticCrosshair;
 };
 extern hack h;
 #endif

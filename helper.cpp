@@ -44,7 +44,7 @@ Vector WorldToScreen_(Vector &camerapos,Vector &enemy, QAngle &myvang, float FOV
     QAngle myVang = myvang;
     float magical = 1.2; //just found this thru trial and error, its used to grow or shrink the focallength (for some reason it is needed on my 4:3 AND 16:9 monitor because otherwise i get inaccurate focal length). if you are using 4:3 stretched on 16:9 a value of 1.52 works best.
     myVang.y+=90;
-    //std::cout<<" width: "<<settings::wind_width<<" height: "<<settings::wind_height<<" ratio "<<settings::wind_width/settings::wind_height<<std::endl;
+    //std::cout<<" width: "<<settings::window::wind_width<<" height: "<<settings::window::wind_height<<" ratio "<<settings::window::wind_width/settings::window::wind_height<<std::endl;
     if(FOV >= 90&&FOV<110){
      magical = 1.224489796;
     }
@@ -80,20 +80,20 @@ Vector WorldToScreen_(Vector &camerapos,Vector &enemy, QAngle &myvang, float FOV
     rotatedPoint.y = matrix[1][0] * point.x + matrix[1][1] * point.y + matrix[1][2] * point.z;
     rotatedPoint.z = matrix[2][0] * point.x + matrix[2][1] * point.y + matrix[2][2] * point.z;
 
-    float focalLength= (settings::wind_height / 2) / tanf((M_PI/180)*(FOV) / 2);
+    float focalLength= (settings::window::wind_height / 2) / tanf((M_PI/180)*(FOV) / 2);
     //std::cout<<"focalL "<<focalLength<<" fov "<<FOV<<std::endl;
     Vector scrPos;
-    scrPos.x = focalLength * rotatedPoint.x / rotatedPoint.z + settings::wind_width/2;
-    scrPos.y = focalLength * rotatedPoint.y / rotatedPoint.z + settings::wind_height/2;
+    scrPos.x = focalLength * rotatedPoint.x / rotatedPoint.z + settings::window::wind_width/2;
+    scrPos.y = focalLength * rotatedPoint.y / rotatedPoint.z + settings::window::wind_height/2;
     scrPos.z = 0;
     if(rotatedPoint.z>0){
-        scrPos.x = (settings::wind_width*settings::cofLineTetherX)-(scrPos.x-(settings::wind_width*settings::cofLineTetherX));
-        scrPos.y=settings::wind_height+(settings::wind_height*settings::cofLineTetherY-scrPos.y);
-        Vector origin(settings::wind_width*settings::cofLineTetherX,settings::wind_height*settings::cofLineTetherY,0);
+        scrPos.x = (settings::window::wind_width*settings::window::cofLineTetherX)-(scrPos.x-(settings::window::wind_width*settings::window::cofLineTetherX));
+        scrPos.y=settings::window::wind_height+(settings::window::wind_height*settings::window::cofLineTetherY-scrPos.y);
+        Vector origin(settings::window::wind_width*settings::window::cofLineTetherX,settings::window::wind_height*settings::window::cofLineTetherY,0);
         Vector end(scrPos.x,scrPos.y,0);
         double len = sqrt(powf(origin.x-end.x,2)+powf(origin.y-end.y,2));
-        scrPos.x = end.x +(end.x-origin.x)/len*settings::wind_width;
-        scrPos.y = end.y +(end.y-origin.y)/len*settings::wind_width;
+        scrPos.x = end.x +(end.x-origin.x)/len*settings::window::wind_width;
+        scrPos.y = end.y +(end.y-origin.y)/len*settings::window::wind_width;
         scrPos.z = -1;
     }
     //std::cout<<"scrPos.x "<<scrPos.x<<std::endl;
@@ -181,11 +181,11 @@ QAngle calcAngle(Vector* source, Vector* target){
 }
 Vector RecoilCrosshair(QAngle &vpunch, float FOV){
     Vector crosshair;
-    float xDelta = (tanf( (vpunch.y / 2) * M_PI/180) / tanf( (FOV / 2) * M_PI/180))*settings::wind_width;//x delta takes the y vpunch because it is yaw
-    float yDelta = (tanf( (vpunch.x / 2) * M_PI/180) / tanf( (FOV / 2) * M_PI/180))*settings::wind_height;
+    float xDelta = (tanf( (vpunch.y / 2) * M_PI/180) / tanf( (FOV / 2) * M_PI/180))*settings::window::wind_width;//x delta takes the y vpunch because it is yaw
+    float yDelta = (tanf( (vpunch.x / 2) * M_PI/180) / tanf( (FOV / 2) * M_PI/180))*settings::window::wind_height;
     //std::cout<<"xDelta: "<<xDelta<<" yDelta: "<<yDelta<<std::endl;
-    crosshair.x = settings::wind_width/2 - xDelta;
-    crosshair.y = settings::wind_height/2 + yDelta;
+    crosshair.x = settings::window::wind_width/2 - xDelta;
+    crosshair.y = settings::window::wind_height/2 + yDelta;
     //std::cout<<" crosshair.x: "<<crosshair.x<<" crosshair.y: "<<crosshair.y<<std::endl;
     return crosshair;
 }
@@ -276,6 +276,10 @@ std::string getConfigValue(std::string property, libconfig::Config &cfg) {
         std::cout<<ss.str();
     }
     return NULL;
+}
+std::string AtomicBoolToString(std::atomic<bool> *b)
+{
+    return *b ? "true":"false";
 }
 }
 

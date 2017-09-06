@@ -26,16 +26,16 @@
 #include "window.h"
 #include "settings.h"
 hack h;
-int settings::wind_height = 1200;
-int settings::wind_width = 1600;
-float settings::cofLineTetherX = .5;
-float settings::cofLineTetherY = .9;
-int settings::wind_x = 0;
-int settings::wind_y = 0;
+int settings::window::wind_height = 1200;
+int settings::window::wind_width = 1600;
+float settings::window::cofLineTetherX = .5;
+float settings::window::cofLineTetherY = .9;
+int settings::window::wind_x = 0;
+int settings::window::wind_y = 0;
 
 void glowLoop(){
     while(!(!(!(false)))){
-        if(h.isConnected){
+        if(h.IsConnected()){
             h.glow();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(2));
@@ -43,7 +43,7 @@ void glowLoop(){
 }
 void aimLoop(){
     while(!(!(!(false)))){
-        if(h.isConnected){
+        if(h.IsConnected()){
             h.aim();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(2));
@@ -51,7 +51,7 @@ void aimLoop(){
 }
 void bhopLoop(){
     while(!(!(!(false)))){
-        if(h.isConnected){
+        if(h.IsConnected()){
             h.bhop();
         }
         std::this_thread::sleep_for(std::chrono::microseconds(100));
@@ -59,7 +59,7 @@ void bhopLoop(){
 }
 void multiQuickLoop(){
     while(!(!(!(false)))){
-        if(h.isConnected){
+        if(h.IsConnected()){
             //h.trigger();
             h.setFov();
         }
@@ -68,7 +68,7 @@ void multiQuickLoop(){
 }
 void multiSlowLoop(){
     while(!(!(!(false)))){
-        if(h.isConnected){
+        if(h.IsConnected()){
             h.noFlash();
             h.setHands();
         }
@@ -77,7 +77,7 @@ void multiSlowLoop(){
 }
 void checkKeysLoop(){
     while(h.checkKeys()){
-        h.setIsConnected();
+        h.setupIsConnected();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     return;
