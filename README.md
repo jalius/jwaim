@@ -7,7 +7,7 @@ If you were wondering, I wrote this cheat nearly entirely from scratch. I used a
 
 Development started 7/1/17  
 Credits to: 
-thisgamesux@github.com
+github.com user thisgamesux
 
 
 Thanks to every helpful person at unknowncheats!
