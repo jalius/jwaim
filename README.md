@@ -2,7 +2,13 @@
 This is a cheat for the 64 bit linux csgo (tested on ubuntu 17.04)  
 It utilizes QT graphics library to draw ESP and other info on screen  
 
-I uploaded it here to share with anyone interested, and mainly just so that I don't lose track of it. I hope anyone who finds this can find it useful for learning or for fun.   
+I uploaded it here to share with anyone interested, and mainly just so that I don't lose track of it. I hope anyone who finds this can find it useful for learning or for fun.  
+If you were wondering, I wrote this cheat nearly entirely from scratch. I used a memory wrapper and glow read/write functionality from github user thisgamesux. 
+
+Development started 7/1/17  
+Credits to: 
+thisgamesux@github.com
+
 
 Thanks to every helpful person at unknowncheats!
 
