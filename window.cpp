@@ -122,19 +122,26 @@ void qWindow::paintEvent(QPaintEvent *)
             painter.setFont(font);
             std::string health;
             health = std::to_string(entitiesToScreen[i].entityInfo.entity.m_iHealth);
-            painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y,1000,1000,0,entitiesToScreen[i].name.c_str());            
-            painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight,1000,1000,0,health.c_str());
+            painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y,1000,1000,0,entitiesToScreen[i].name.c_str());       
+
+            std::vector<std::string> stringsToDraw;
+            stringsToDraw.reserve(3);
+
+            stringsToDraw.push_back(health.c_str());
             if(!entitiesToScreen[i].myTeam||h.shootFriends){
 
-                std::string scoped = entitiesToScreen[i].scoped ? "Scoped":"";
-                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.26,1000,1000,0,scoped.c_str());
-
-                std::string reloading = entitiesToScreen[i].entityInfo.entity.m_fFlags&IN_RELOAD?"Reloading":"";
-                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.39,1000,1000,0,reloading.c_str());
-
-                std::string defusing = entitiesToScreen[i].defusing?"Defusing":"";
-                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.52,1000,1000,0,defusing.c_str());
-
+                if(entitiesToScreen[i].scoped){
+                    stringsToDraw.push_back("Scoped");
+                }
+                if(entitiesToScreen[i].defusing){
+                    stringsToDraw.push_back("Defusing");
+                }
+                int j = 0;
+                for(auto str : stringsToDraw)
+                {
+                    j++;
+                    painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y+10*j,1000,1000,0,str.c_str());
+                }
                 painter.drawLine(entitiesToScreen[i].origin.x,entitiesToScreen[i].origin.y,settings::window::wind_width*settings::window::cofLineTetherX,settings::window::wind_height*settings::window::cofLineTetherY);
 
                 //helper::clampAngle(&entitiesToScreen[i].entityInfo.entity.m_angNetworkAngles);
