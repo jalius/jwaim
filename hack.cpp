@@ -42,7 +42,55 @@ void hack::writeEntities(std::array<EntityInfo,64> &wentities){
     entities=wentities;
     //cout<<"wrote ent list"<<endl;
 }
+std::array<unsigned long, 64> hack::readAllPlayerNamePtrs(unsigned long playerresources_adr){
+    std::array<unsigned long,64> nameptrs;
 
+    playerresources_adr+=0xf78;
+    csgo.Read((void*)playerresources_adr,&nameptrs,sizeof(unsigned long)*64);
+    return nameptrs;
+}
+std::array<std::string,64> hack::readAllPlayerNames(unsigned long playerresources_adr){
+    struct iovec local[1];
+    struct iovec remote[64];
+    std::array<std::array<char,64>,64> names_buf;
+    std::array<unsigned long,64> nameptrs;
+    std::array<std::string,64> names;
+    nameptrs = readAllPlayerNamePtrs(playerresources_adr);
+    for(int i = 0;i<64;i++){
+        remote[i].iov_base=(void*)nameptrs[i];
+        remote[i].iov_len=sizeof(char)*64;
+    }
+    local[0].iov_base=&names_buf;
+    local[0].iov_len=sizeof(char)*64*64;
+    process_vm_readv(csgo.GetPid(),local,1,remote,64,0);
+    for(int i = 0;i<64;i++){
+        int endindex = 63;
+        for(int j = 0;j<64;j++){
+            if(names_buf[i][j]==0){
+                endindex=j;
+                break;
+            }
+        }
+        std::string name(names_buf[i].begin(),endindex);
+        names[i]=name;
+    }
+    return names;
+}
+std::array<bool,64> hack::findSpectatorsOfEnt(std::array<EntityInfo,64> entityInfo, int entID){
+    std::array<bool,64> spectators;
+    for(int i = 0;i<64;i++){
+        unsigned long long hObserverTarget = 0;
+        csgo.Read((void*)entityInfo[i].entityPtr+offsets::m_hObserverTarget,&hObserverTarget,sizeof(long long));
+        hObserverTarget&=0xFFF;
+        if(hObserverTarget==entID&&!entityInfo[i].entity.m_bDormant){
+            spectators[i]=true;
+        }
+        else{
+            spectators[i]=false;
+        }
+    }
+    return spectators;
+}
 bool hack::getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &rcsCross){
     if(!hack::isConnected||!ShouldESP){
         return false;
@@ -53,6 +101,7 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &r
     unsigned long one = 0;
     unsigned long two = 0;
     unsigned long addressOfViewAngle = 0;
+    unsigned long playerresources_adr = 0;    
     int myLife = 0;
     QAngle aimpunch;
     QAngle viewpunch;
@@ -66,6 +115,8 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &r
     Entity specEnt;
     int FOV = 0;
     int FOVStart = 0;
+    std::array<std::string, 64> names;
+    std::array<bool,64> spectators;
 
     if(!csgo.Read((void*)m_addressOfLocalPlayer,&localPlayer,sizeof(long))){
         return false;
@@ -86,7 +137,9 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &r
     //cout<<myActualPos.z<<endl;
     //cout<<"FOV "<<FOV<<" FOVSTART "<<FOVStart<<endl;
     //cout<<"my life "<<myLife<<endl;
+    csgo.Read((void*)playerresources_ptr,&playerresources_adr,sizeof(int));    
     csgo.Read((void*)localPlayer+offsets::m_iObserveCamType, &observeCamType, sizeof(int));
+    names = hack::readAllPlayerNames(playerresources_adr);
     if(myLife == LIFE_ALIVE&&observeCamType==0){
         //if we are alive or
         csgo.Read((void*)localPlayer+offsets::m_iFOV, &FOV, sizeof(int));
@@ -145,6 +198,7 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &r
         csgo.Read((void*)localPlayer+offsets::m_viewPunchAngle,&viewpunch,sizeof(QAngle));
         specEnt = myEnt;
     }
+    spectators = hack::findSpectatorsOfEnt(entitiesForScreen,specEnt.ID);    
     //add up all the angles
     myTotalAng.x = baseAng.x + aimpunch.x + viewpunch.x;
     myTotalAng.y = baseAng.y + aimpunch.y + viewpunch.y;
@@ -153,6 +207,8 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &r
     myActualPos = myEnt.m_vecNetworkOrigin;
     myActualPos.z += myEnt.m_vecViewOffset.z;
     for (int i = 0;i<64;i++){
+        output[i].name = names[i];
+        output[i].spectatingMe = spectators[i];
         if(entitiesForScreen[i].entity.m_iHealth<=0||entitiesForScreen[i].entity.m_bDormant||entitiesForScreen[i].entity.ID==specEnt.ID||entitiesForScreen[i].entityPtr==0){
             continue;
         }
@@ -1019,6 +1075,8 @@ void hack::init(){
         csgo.Read((void*)found_m_iFOV,&offsets::m_iFOV,sizeof(int));
         offsets::m_iFOVStart=offsets::m_iFOV+0x004;
     }
+    unsigned long found_playerresources = (long) client.find(csgo, "\x48\x8B\x05\x00\x00\x00\x00\x55\x48\x89\xE5\x48\x85\xC0\x74\x10\x48", "xxx????xxxxxxxxxx")+3;
+    playerresources_ptr = csgo.GetCallAddress((void*)found_playerresources);
     cout<<std::hex<<"offsets::m_fFlashMaxAlpha pointer address "<<foundflashMaxAlphaOffset<<endl;
     cout<<"client.start: "<<std::hex<<client.start<<endl;
     cout<<"engine.start: "<<engine.start<<endl;

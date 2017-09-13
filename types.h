@@ -538,14 +538,17 @@ struct EntityInfo{
 struct EntityToScreen{
     Vector head;
     Vector origin;
+    Vector eyes;
+    Vector aimLine;
     EntityInfo entityInfo;
-    //string name;
+    std::string name;
     int health;
     bool scoped;
     bool myTeam;
     bool defusing;
     bool reloading;
     float lby;
+    bool spectatingMe;
 };
 
 #endif

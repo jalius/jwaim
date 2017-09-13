@@ -40,7 +40,7 @@ void qWindow::paintEvent(QPaintEvent *)
     {
         i = 0;
     }*/
-    painter.drawText(10,15,"JWAim");
+    painter.drawText(settings::window::wind_width*.2,15,"JWAim");
     font.setPointSize(6);
 
     QColor redFalse(255,050,05);
@@ -49,41 +49,52 @@ void qWindow::paintEvent(QPaintEvent *)
 
     pen.setColor(h.ShouldRadarHack?greenTrue:redFalse);
     painter.setPen(pen);
-    painter.drawText(12, 25, (h.ShouldRadarHackToggleKey + " RadarHack: " + helper::AtomicBoolToString(&h.ShouldRadarHack)).c_str());
+    painter.drawText(settings::window::wind_width*.2, 25, (h.ShouldRadarHackToggleKey + " RadarHack: " + helper::AtomicBoolToString(&h.ShouldRadarHack)).c_str());
 
     pen.setColor(h.ShouldGlow?greenTrue:redFalse);
     painter.setPen(pen);
-    painter.drawText(12,35,(h.ShouldGlowToggleKey + " Glow: "+helper::AtomicBoolToString(&h.ShouldGlow)).c_str());
+    painter.drawText(settings::window::wind_width*.2,35,(h.ShouldGlowToggleKey + " Glow: "+helper::AtomicBoolToString(&h.ShouldGlow)).c_str());
 
     pen.setColor(h.ShouldESP?greenTrue:redFalse);
     painter.setPen(pen);
-    painter.drawText(12,45,(h.ShouldESPToggleKey + " ESP: "+helper::AtomicBoolToString(&h.ShouldESP)).c_str());
+    painter.drawText(settings::window::wind_width*.2,45,(h.ShouldESPToggleKey + " ESP: "+helper::AtomicBoolToString(&h.ShouldESP)).c_str());
 
     pen.setColor(h.ShouldBhop?greenTrue:redFalse);
     painter.setPen(pen);
-    painter.drawText(12, 55, (h.ShouldBhopToggleKey + " BHop: " + helper::AtomicBoolToString(&h.ShouldBhop)).c_str());
+    painter.drawText(settings::window::wind_width*.2, 55, (h.ShouldBhopToggleKey + " BHop: " + helper::AtomicBoolToString(&h.ShouldBhop)).c_str());
 
     pen.setColor(h.ShouldAimAssist?greenTrue:redFalse);
     painter.setPen(pen);
-    painter.drawText(12, 65, (h.ShouldAimAssistToggleKey + " AimAssist: " + helper::AtomicBoolToString(&h.ShouldAimAssist)).c_str());
+    painter.drawText(settings::window::wind_width*.2, 65, (h.ShouldAimAssistToggleKey + " AimAssist: " + helper::AtomicBoolToString(&h.ShouldAimAssist)).c_str());
 
     pen.setColor(h.ShouldRage?greenTrue:redFalse);
     painter.setPen(pen);
-    painter.drawText(12, 75, (h.ShouldRageToggleKey + " Rage: "+helper::AtomicBoolToString(&h.ShouldRage)).c_str());
+    painter.drawText(settings::window::wind_width*.2, 75, (h.ShouldRageToggleKey + " Rage: "+helper::AtomicBoolToString(&h.ShouldRage)).c_str());
 
     pen.setColor(h.ShouldNoFlash?greenTrue:redFalse);
     painter.setPen(pen);
-    painter.drawText(12, 85, (h.ShouldNoFlashToggleKey + " No Flash: "+helper::AtomicBoolToString(&h.ShouldNoFlash)).c_str());
+    painter.drawText(settings::window::wind_width*.2, 85, (h.ShouldNoFlashToggleKey + " No Flash: "+helper::AtomicBoolToString(&h.ShouldNoFlash)).c_str());
 
     pen.setColor(h.ShouldRCS?greenTrue:redFalse);
     painter.setPen(pen);
-    painter.drawText(12, 95, (h.ShouldRCSToggleKey + " RCS: "+helper::AtomicBoolToString(&h.ShouldRCS)).c_str());
+    painter.drawText(settings::window::wind_width*.2, 95, (h.ShouldRCSToggleKey + " RCS: "+helper::AtomicBoolToString(&h.ShouldRCS)).c_str());
 
     pen.setColor(QColor(255,255,255));
     painter.setPen(pen);
     if(h.IsConnected()&&h.ShouldESP){
+        pen.setColor(QColor(255,255,255));
+        font.setPointSize(8);
+        painter.setPen(pen);
+        painter.setFont(font);
+        std::vector<std::string> spectators;
+        spectators.reserve(64);
+        painter.drawText(50, settings::window::wind_height/3, " Spectators: ");       
         for(int i = 0;i<64;i++)
         {
+            if(entitiesToScreen[i].spectatingMe){
+                spectators.push_back(entitiesToScreen[i].name);
+                //cout<<"spectator added: "<<entitiesToScreen[i].name<<endl;
+            }
             if(entitiesToScreen[i].origin.x==0&&entitiesToScreen[i].origin.y==0){//||entitiesToScreen[i].origin.x>width*2||entitiesToScreen[i].origin.y>height*2){
                continue;
             }
@@ -111,16 +122,18 @@ void qWindow::paintEvent(QPaintEvent *)
             painter.setFont(font);
             std::string health;
             health = std::to_string(entitiesToScreen[i].entityInfo.entity.m_iHealth);
-            painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y,1000,1000,0,health.c_str());
+            painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y,1000,1000,0,entitiesToScreen[i].name.c_str());            
+            painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight,1000,1000,0,health.c_str());
             if(!entitiesToScreen[i].myTeam||h.shootFriends){
+
                 std::string scoped = entitiesToScreen[i].scoped ? "Scoped":"";
-                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.15,1000,1000,0,scoped.c_str());
+                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.26,1000,1000,0,scoped.c_str());
 
                 std::string reloading = entitiesToScreen[i].entityInfo.entity.m_fFlags&IN_RELOAD?"Reloading":"";
-                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.30,1000,1000,0,reloading.c_str());
+                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.39,1000,1000,0,reloading.c_str());
 
                 std::string defusing = entitiesToScreen[i].defusing?"Defusing":"";
-                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.45,1000,1000,0,defusing.c_str());
+                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.52,1000,1000,0,defusing.c_str());
 
                 painter.drawLine(entitiesToScreen[i].origin.x,entitiesToScreen[i].origin.y,settings::window::wind_width*settings::window::cofLineTetherX,settings::window::wind_height*settings::window::cofLineTetherY);
 
@@ -153,6 +166,13 @@ void qWindow::paintEvent(QPaintEvent *)
             painter.drawLine(middleX,middleY+5,middleX,middleY-5);
             painter.drawLine(middleX+5,middleY,middleX-5,middleY);
         }
+        }
+        pen.setColor(QColor(255,255,255));
+        font.setPointSize(7);
+        painter.setPen(pen);
+        painter.setFont(font);
+        for(int i = 0;i<spectators.size();i++){
+            painter.drawText(60, settings::window::wind_height/3+15*(i+1), spectators[i].c_str());                            
         }
     }
 }

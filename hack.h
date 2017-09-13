@@ -161,6 +161,10 @@ private:
     int getClosestBone(unsigned long m_pStudioBones, std::vector<int> &preferredBones, QAngle &curViewAngle, QAngle &aimPunch, Vector &myPos);
     int getLifeState(unsigned long entityPtr);
 
+    std::array<unsigned long, 64> readAllPlayerNamePtrs(unsigned long playerresources_adr);
+    std::array<std::string,64> readAllPlayerNames(unsigned long playerresources_adr);
+    std::array<bool,64> findSpectatorsOfEnt(std::array<EntityInfo,64> entityInfo, int entID);
+
     std::atomic<bool> isConnected;
 
     void readEntities(std::array<EntityInfo,64> &rentities);
@@ -206,6 +210,7 @@ private:
     unsigned long basePointerOfViewAngle;
     unsigned long addressServerDetail;
     unsigned long addressIsConnected;
+    unsigned long playerresources_ptr;
 
 };
 extern hack h;
