@@ -136,12 +136,6 @@ void qWindow::paintEvent(QPaintEvent *)
                 if(entitiesToScreen[i].defusing){
                     stringsToDraw.push_back("Defusing");
                 }
-                int j = 0;
-                for(auto str : stringsToDraw)
-                {
-                    j++;
-                    painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y+10*j,1000,1000,0,str.c_str());
-                }
                 painter.drawLine(entitiesToScreen[i].origin.x,entitiesToScreen[i].origin.y,settings::window::wind_width*settings::window::cofLineTetherX,settings::window::wind_height*settings::window::cofLineTetherY);
 
                 //helper::clampAngle(&entitiesToScreen[i].entityInfo.entity.m_angNetworkAngles);
@@ -149,8 +143,15 @@ void qWindow::paintEvent(QPaintEvent *)
                     //painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.45,1000,1000,0,"Anti-Aim");
                 //}
             }
+            int j = 0;
+            for(auto str : stringsToDraw)
+            {
+                j++;
+                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y+10*j,1000,1000,0,str.c_str());
+            }
             }
             else if(entitiesToScreen[i].origin.z==-1&&!entitiesToScreen[i].myTeam){
+                //draws a line to the entity that is behind me (origin z ==-1 is set earlier if they are behind me)
                 pen.setColor(QColor(h.Colors()[20],h.Colors()[21],h.Colors()[22],h.Colors()[23]));
                 painter.setPen(pen);
                 painter.drawLine(entitiesToScreen[i].origin.x,entitiesToScreen[i].origin.y,settings::window::wind_width*settings::window::cofLineTetherX,settings::window::wind_height*settings::window::cofLineTetherY);
