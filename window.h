@@ -19,6 +19,8 @@ class qWindow : public QWidget
     Q_OBJECT
 public:
     explicit qWindow(QWidget *parent = 0);
+    void drawESPBoxes(std::array<EntityToScreen,64> &entitiesToScreen, QPainter &painter,QPen &pen, QFont &font);
+    void drawToggleMenu(QPainter &painter, QPen &pen, QFont &font);
     std::array<EntityToScreen,64> entitiesToScreen;
     Vector rcsCross;
 private:
