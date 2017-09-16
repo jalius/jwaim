@@ -18,11 +18,13 @@ qWindow::qWindow(QWidget *parent) : QWidget(parent)
 }
 void qWindow::paintEvent(QPaintEvent *)
 {
+    const QColor redFalse(255, 050, 05);
+    const QColor greenTrue(050, 255, 05);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(105, 225, 225, 0));
-    //painter.drawRect(settings::window::wind_x, settings::window::wind_y, settings::window::wind_width, settings::window::wind_height);
+    //painter.drawRect(settings::window::wind_x, settings::window::wind_y, settings::window::wind_width, settings::window::wind_height); sorta forgot why i have this here
 
     QPen pen;
     pen.setStyle(Qt::SolidLine);
@@ -41,11 +43,9 @@ void qWindow::paintEvent(QPaintEvent *)
         i = 0;
     }*/
     painter.drawText(settings::window::wind_width * .2, 15, "JWAim");
+
     font.setPointSize(6);
     painter.setFont(font);
-
-    const QColor redFalse(255, 050, 05);
-    const QColor greenTrue(050, 255, 05);
 
     pen.setColor(h.ShouldRadarHack ? greenTrue : redFalse);
     painter.setPen(pen);
@@ -81,13 +81,8 @@ void qWindow::paintEvent(QPaintEvent *)
 
     if (h.IsConnected())
     {
-        pen.setColor(QColor(255, 255, 255));
-        font.setPointSize(8);
-        painter.setFont(font);
-        painter.setPen(pen);
         std::vector<std::string> spectators;
         spectators.reserve(64);
-        painter.drawText(50, settings::window::wind_height / 3, " Spectators: ");
         for (int i = 0; i < 64; i++)
         {
             if (entitiesToScreen[i].spectatingMe)
@@ -118,13 +113,29 @@ void qWindow::paintEvent(QPaintEvent *)
             painter.drawLine(middleX, middleY + 5, middleX, middleY - 5);
             painter.drawLine(middleX + 5, middleY, middleX - 5, middleY);
         }
-        pen.setColor(QColor(255, 255, 255));
-        font.setPointSize(7);
-        painter.setPen(pen);
-        painter.setFont(font);
-        for (int i = 0; i < spectators.size(); i++)
+        if(spectators.size()==0)
         {
-            painter.drawText(60, settings::window::wind_height / 3 + 15 * (i + 1), spectators[i].c_str());
+            pen.setColor(QColor(255,255,255));
+            painter.setPen(pen);
+            font.setPointSize(10);
+            painter.setFont(font);
+            painter.drawText(50, settings::window::wind_height / 2.7, " Spectators: ");            
+        }
+        else
+        {
+            pen.setColor(redFalse);
+            painter.setPen(pen);
+            font.setPointSize(10);
+            painter.setFont(font);
+            painter.drawText(50, settings::window::wind_height / 2.7, " Spectators: ");
+            
+            font.setPointSize(9);
+            painter.setPen(pen);
+            painter.setFont(font);
+            for (int i = 0; i < spectators.size(); i++)
+            {
+                painter.drawText(60, settings::window::wind_height / 2.7 + 15 * (i + 1), spectators[i].c_str());
+            }
         }
     }
 }
@@ -137,6 +148,9 @@ void qWindow::callback()
 }
 void qWindow::drawESPBoxes(std::array<EntityToScreen, 64> &entitiesToScreen, QPainter &painter, QPen &pen, QFont &font)
 {
+    font.setPointSize(7);
+    font.setBold(false);
+    pen.setWidth(2);
     for (int i = 0; i < 64; i++)
     {
         if (entitiesToScreen[i].origin.x == 0 && entitiesToScreen[i].origin.y == 0)
@@ -151,7 +165,6 @@ void qWindow::drawESPBoxes(std::array<EntityToScreen, 64> &entitiesToScreen, QPa
             {
                 fheight *= .7;
             }
-            pen.setWidth(2);
             if (entitiesToScreen[i].myTeam && !h.shootFriends)
             {
                 pen.setColor(QColor(h.Colors()[16] * 255, h.Colors()[17] * 255, h.Colors()[18] * 255, 255));
