@@ -153,6 +153,7 @@ public:
     bool legitGlow;
     bool drawrcsCrosshair;
     bool staticCrosshair;
+    int aimbotMaxBullets;//the amount of bullets after which the aimbot stops tracking (for "legit" cheaters)
     //end settings
     bool getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &rcsCross);
 

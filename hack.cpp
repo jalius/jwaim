@@ -7,7 +7,7 @@ unsigned int offsets::m_lifeState = 0x293; //int m_lifeState; // 0x293
 unsigned int offsets::m_bIsDefusing = 0x414C;//unsigned char m_bIsDefusing; // 0x416C
 unsigned int offsets::m_bIsScoped = 0x4144;//unsigned char m_bIsScoped; // 0x4164
 unsigned int offsets::m_bGunGameImmunity = 0x4178;   	//unsigned char m_bGunGameImmunity; // 0x4178
-unsigned int offsets::m_iShotsFired = 0xABB0;    	//int m_iShotsFired; // 0xABB0
+unsigned int offsets::m_iShotsFired = 0xAB90;    	//int m_iShotsFired; // 0xAB90
 unsigned int offsets::m_aimPunchAngle = 0x3764;    	//Vector m_aimPunchAngle; // 0x3764
 unsigned int offsets::m_fFlashMaxAlpha = 0xabd4; //flash max alpha 0-255 float value
 unsigned int offsets::m_iFOV = 0x3998;//fov when you are doing something other than being normal (scoped, etc.)
@@ -45,7 +45,7 @@ void hack::writeEntities(std::array<EntityInfo,64> &wentities){
 std::array<unsigned long, 64> hack::readAllPlayerNamePtrs(unsigned long playerresources_adr){
     std::array<unsigned long,64> nameptrs;
 
-    playerresources_adr+=0xf78;
+    playerresources_adr+=0xf78;//todo: variable for this hardcoded offset
     csgo.Read((void*)playerresources_adr,&nameptrs,sizeof(unsigned long)*64);
     return nameptrs;
 }
@@ -92,7 +92,7 @@ std::array<bool,64> hack::findSpectatorsOfEnt(std::array<EntityInfo,64> entityIn
     return spectators;
 }
 bool hack::getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &rcsCross){
-    if(!hack::isConnected||!ShouldESP){
+    if(!hack::isConnected){
         return false;
     }
     int observeCamType = 0;
@@ -260,7 +260,16 @@ void hack::aim(){
     if(!hack::isConnected){
         return;
     }
-    if(!hack::ShouldAimAssist){
+
+    unsigned long localPlayer = 0;
+    unsigned int shotsFired = 0;
+    csgo.Read((void*) m_addressOfLocalPlayer, &localPlayer, sizeof(long));
+    if(localPlayer==0){
+        return;
+    }
+
+    csgo.Read((void*)(localPlayer+offsets::m_iShotsFired), &shotsFired,sizeof(int));
+    if(!hack::ShouldAimAssist||(hack::aimbotMaxBullets!=0&&shotsFired>hack::aimbotMaxBullets)){
         int AltTwo = 4;
         csgo.Read((void*)m_addressOfAlt2,&AltTwo,sizeof(long));
         if(AltTwo==5){
@@ -282,23 +291,22 @@ void hack::aim(){
     QAngle punchDelta;
     QAngle viewAngle;
     QAngle aimDelta;
-    unsigned int shotsFired = 0;
     int AltTwo = 4;
-
-    Vector theirPos;
-    BoneMatrix theirBones;
 
     //mem addresses
     unsigned int serverDetail = 0;
     unsigned long one = 0;
     unsigned long two = 0;
-    unsigned long localPlayer = 0;
     unsigned long addressOfViewAngle = 0;
+
+    Vector theirPos;
+    BoneMatrix theirBones;
+
 
     static bool foundTarget;//true while found a living target (not necessarily in fov)
     bool shouldShoot= false;//true if our crosshair is close enough to the enemy and we should shoot
     static bool isAiming;//true if mouse was clicked when foundTarget == true. remains true until mouse is released. used to determine if we should snap to next target (based on rage mode or legit mode setting)
-    static bool acquiring;//true if mouse clicked but didnt reach target yet. used to finish a shot in progress.
+    static bool acquiring;//true if mouse clicked but didnt reach target yet. used to finish a shot in progress even when mouse is released early.
 
     static unsigned int idclosestEnt = 0;
     float lowestDistance = -1.0;//used to determine the closest target in the entity loop
@@ -307,10 +315,6 @@ void hack::aim(){
 
     hack::readEntities(entitiesCopy);
 
-    csgo.Read((void*) m_addressOfLocalPlayer, &localPlayer, sizeof(long));
-    if(localPlayer==0){
-        return;
-    }
     csgo.Read((void*)m_addressOfAlt2,&AltTwo,sizeof(long));
     csgo.Read((void*)hack::addressServerDetail,&serverDetail, sizeof(int));
     csgo.Read((void*)hack::basePointerOfViewAngle,&one,sizeof(long));
@@ -1116,6 +1120,7 @@ void hack::init(){
     legitGlow = ::atof(helper::getConfigValue("legit_glow",cfg).c_str());
     drawrcsCrosshair = ::atof(helper::getConfigValue("rcs_crosshair",cfg).c_str());
     staticCrosshair = ::atof(helper::getConfigValue("static_crosshair",cfg).c_str());
+    aimbotMaxBullets = ::atof(helper::getConfigValue("max_aimbot_bullets",cfg).c_str());
 
     //check setting boundries
     if(flashMax<0||flashMax>100)
