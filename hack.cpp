@@ -164,7 +164,7 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen, 64> &output, Vector &
     names = hack::readAllPlayerNames(playerresources_adr);
     if (myLife == LIFE_ALIVE && observeCamType == 0)
     {
-        //if we are alive or
+        //if we are alive and not spectating someone
         csgo.Read((void *)localPlayer + offsets::m_iFOV, &FOV, sizeof(FOV_t));
         if (FOV.iFOV == 0 && FOV.iFOVStart != 0)
         {
@@ -195,8 +195,8 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen, 64> &output, Vector &
         }
         else if (hObserverTarget > 1 && hObserverTarget < 64)
         {
-            //if its between 2 and 63 then its most likely valid, so set it as the ent we are spectating and use it's FOV and aimpunch for calculations
-            csgo.Read((void *)localPlayer + offsets::m_iFOV, &FOV, sizeof(FOV_t));
+            //if its between 2 and 63 then its most likely valid ent, so set it as the ent we are spectating and use it's FOV and aimpunch for calculations
+            csgo.Read((void *)entitiesForScreen[hObserverTarget].entityPtr + offsets::m_iFOV, &FOV, sizeof(FOV_t));
             if (FOV.iFOV == 0 && FOV.iFOVStart != 0)
             {
                 FOV.iFOV = FOV.iFOVStart;
@@ -802,7 +802,6 @@ bool hack::glow()
                 if (ent.ID == ActiveWeaponEntID)
                 {
                     int iWeaponID = 0;
-                    cout << g_glow[i].m_pEntity << endl;
                     csgo.Read((void *)g_glow[i].m_pEntity + offsets::m_AttributeManager + 0x60 + offsets::m_iItemDefinitionIndex, &iWeaponID, sizeof(int));
                     if (iWeaponID > WEAPON_NONE && iWeaponID < WEAPON_MAX)
                     {
@@ -812,7 +811,6 @@ bool hack::glow()
                     {
                         iWeaponID_lp = -1;
                     }
-                    cout << "wepid: " << iWeaponID << endl;
                 }
                 if (ent.m_iTeamNum != 2 && ent.m_iTeamNum != 3)
                 {
