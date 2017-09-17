@@ -40,6 +40,8 @@ using namespace libconfig;
 #define LIFE_RESPAWNABLE		3
 #define LIFE_DISCARDBODY		4
 
+#define DEFAULT_FOV  90
+
 #define ON_GROUND (1<<0)
 #define IN_JUMP   (1<<1) // Jump
 #define IN_DUCK   (1<<2)
@@ -162,6 +164,8 @@ private:
     int getClosestBone(unsigned long m_pStudioBones, std::vector<int> &preferredBones, QAngle &curViewAngle, QAngle &aimPunch, Vector &myPos);
     int getLifeState(unsigned long entityPtr);
 
+    int getActiveWeaponEntityID(unsigned long entityPtr);    
+
     std::array<unsigned long, 64> readAllPlayerNamePtrs(unsigned long playerresources_adr);
     std::array<std::string,64> readAllPlayerNames(unsigned long playerresources_adr);
     std::array<bool,64> findSpectatorsOfEnt(std::array<EntityInfo,64> entityInfo, int entID);
@@ -201,6 +205,7 @@ private:
     //
     std::atomic<bool> entityInCrossHair;
 
+    std::atomic<int> iWeaponID_lp;
     //static addresses (set at hack::init())
     unsigned long m_addressOfGlowPointer;
     unsigned long m_addressOfLocalPlayer;

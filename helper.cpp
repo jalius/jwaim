@@ -232,13 +232,14 @@ float getDistanceFov(QAngle* delta,Vector* sourcePos,Vector* targetPos){
 }
 bool IgnoreWeapon( int iWeaponID )
 {
-    return( iWeaponID == WEAPON_NONE || iWeaponID == WEAPON_KNIFE || iWeaponID == WEAPON_FLASHBANG || iWeaponID == WEAPON_CT_MOLOTOV || iWeaponID == WEAPON_SMOKE
-            || iWeaponID == WEAPON_HEGRENADE || iWeaponID == WEAPON_DECOY || iWeaponID == WEAPON_T_MOLOTOV || iWeaponID == WEAPON_C4 || iWeaponID == WEAPON_KNIFEGG );
+    return( iWeaponID == WEAPON_NONE || iWeaponID == WEAPON_TASER || iWeaponID == WEAPON_KNIFE || iWeaponID == WEAPON_FLASHBANG || iWeaponID == WEAPON_HEGRENADE
+            || iWeaponID == WEAPON_SMOKEGRENADE || iWeaponID == WEAPON_MOLOTOV || iWeaponID == WEAPON_DECOY || iWeaponID == WEAPON_INCGRENADE || iWeaponID == WEAPON_C4 || iWeaponID == WEAPON_KNIFE_T || iWeaponID >= WEAPON_KNIFE_BAYONET );
 }
 bool ShouldAutoShoot( int iWeaponID )
 {
-    return( iWeaponID == WEAPON_DUAL|| iWeaponID == WEAPON_FIVE7 || iWeaponID == WEAPON_GLOCK
-            || iWeaponID == WEAPON_P250_CZ75 || iWeaponID == WEAPON_TEC9 || iWeaponID == WEAPON_HKP2000 );
+    return false;
+    /*return( iWeaponID == WEAPON_DUAL|| iWeaponID == WEAPON_FIVE7 || iWeaponID == WEAPON_GLOCK
+            || iWeaponID == WEAPON_P250_CZ75 || iWeaponID == WEAPON_TEC9 || iWeaponID == WEAPON_HKP2000 );*/
 }
 void resolve(Entity* ent, Vector* target, float lby){
     /*float x = target->x -ent->m_vecOrigin.x;

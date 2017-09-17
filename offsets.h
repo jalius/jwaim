@@ -16,6 +16,10 @@ namespace offsets{
     extern unsigned int m_viewPunchAngle;
     extern unsigned int m_hObserverTarget;
     extern unsigned int m_iObserveCamType;// 4 1st person, 5 3rd person, 6 free cam
-
+    extern unsigned int m_bIsSpotted;
+    extern unsigned int m_hActiveWeapon;
+    extern unsigned int m_iWeaponID;
+    extern unsigned int m_AttributeManager;
+    extern unsigned int m_iItemDefinitionIndex;
 }
 #endif // OFFSETS_H

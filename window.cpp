@@ -118,6 +118,7 @@ void qWindow::paintEvent(QPaintEvent *)
             pen.setColor(QColor(255,255,255));
             painter.setPen(pen);
             font.setPointSize(10);
+            font.setBold(true);
             painter.setFont(font);
             painter.drawText(50, settings::window::wind_height / 2.7, " Spectators: ");            
         }
@@ -126,6 +127,7 @@ void qWindow::paintEvent(QPaintEvent *)
             pen.setColor(redFalse);
             painter.setPen(pen);
             font.setPointSize(10);
+            font.setBold(true);
             painter.setFont(font);
             painter.drawText(50, settings::window::wind_height / 2.7, " Spectators: ");
             
