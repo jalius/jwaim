@@ -20,7 +20,9 @@ unsigned int offsets::m_hActiveWeapon = 0x3628;        //todo: sig
 unsigned int offsets::m_iWeaponID = 0x3788;            //this is wrong name, its actually m_AttributeManager + m_Item + m_iItemDefinitionIndex
 unsigned int offsets::m_AttributeManager = 0x34c0;     //todo: sig offset from entity to DataTable
 unsigned int offsets::m_iItemDefinitionIndex = 0x268;  //offset from m_Item (DataTable + 0x60) of DataTable to the weapon's economy ID
-
+static int SIX = 6;
+static int toggleOn = 5;
+static int toggleOff = 4;
 bool hack::IsConnected()
 {
     return isConnected;
@@ -655,9 +657,7 @@ void hack::bhop()
         if (iAlt1Status == 5 && (m_fFlags & ON_GROUND))
         {
             //cout<<"jumping\n:)"<<endl;
-            csgo.Write((void *)((unsigned long)m_addressOfJump), &toggleOn, sizeof(int));
-            this_thread::sleep_for(chrono::microseconds(500));
-            csgo.Write((void *)((unsigned long)m_addressOfJump), &toggleOff, sizeof(int));
+            csgo.Write((void *)((unsigned long)m_addressOfJump), &SIX, sizeof(int));
             /*XFlush(display);
             XTestFakeKeyEvent(display, 65, true, 0);
             this_thread::sleep_for(chrono::milliseconds(1));

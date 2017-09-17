@@ -199,8 +199,6 @@ private:
     int keycodeRadarHack;
     int keycodeAim;
     unsigned char spotted;
-    int toggleOn = 5;
-    int toggleOff = 4;
 
     //
     std::atomic<bool> entityInCrossHair;

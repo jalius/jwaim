@@ -54,7 +54,7 @@ void bhopLoop(){
         if(h.IsConnected()){
             h.bhop();
         }
-        std::this_thread::sleep_for(std::chrono::microseconds(100));
+        std::this_thread::sleep_for(std::chrono::microseconds(10));
     }
 }
 void multiQuickLoop(){
