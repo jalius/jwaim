@@ -121,6 +121,7 @@ public:
     void setHands();
     void setupIsConnected();
     bool IsConnected();
+    bool totalHitsIncreased();
     double *Colors();
     //settings
     Config cfg;
@@ -155,6 +156,7 @@ public:
     bool legitGlow;
     bool drawrcsCrosshair;
     bool staticCrosshair;
+    bool drawHitmarker;
     int aimbotMaxBullets;//the amount of bullets after which the aimbot stops tracking (for "legit" cheaters)
     //end settings
     bool getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &rcsCross);
@@ -204,6 +206,7 @@ private:
     std::atomic<bool> entityInCrossHair;
 
     std::atomic<int> iWeaponID_lp;
+    int lastTotalHits;
     //static addresses (set at hack::init())
     unsigned long m_addressOfGlowPointer;
     unsigned long m_addressOfLocalPlayer;

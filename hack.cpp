@@ -20,6 +20,9 @@ unsigned int offsets::m_hActiveWeapon = 0x3628;        //todo: sig
 unsigned int offsets::m_iWeaponID = 0x3788;            //this is wrong name, its actually m_AttributeManager + m_Item + m_iItemDefinitionIndex
 unsigned int offsets::m_AttributeManager = 0x34c0;     //todo: sig offset from entity to DataTable
 unsigned int offsets::m_iItemDefinitionIndex = 0x268;  //offset from m_Item (DataTable + 0x60) of DataTable to the weapon's economy ID
+
+int settings::misc::hitmarker_time = 8;
+
 static int SIX = 6;
 static int toggleOn = 5;
 static int toggleOff = 4;
@@ -273,6 +276,39 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen, 64> &output, Vector &
         output[i].entityInfo = entitiesForScreen[i];
     }
     return true;
+}
+bool hack::totalHitsIncreased()
+{
+    unsigned long localPlayer = 0;
+    int iTotalHits = 0;
+    csgo.Read((void*)hack::m_addressOfLocalPlayer,&localPlayer,sizeof(unsigned long));
+    csgo.Read((void*)localPlayer+0xABA8,&iTotalHits,sizeof(int));
+    //cout<<"total hits: "<<iTotalHits<<" lastTotal: "<<lastTotalHits<<endl;
+    if(iTotalHits>hack::lastTotalHits)
+    {
+        if(iTotalHits>=255)
+        {
+            /*int one = 1;
+            csgo.Write((void*)localPlayer+0xABA8,&one,sizeof(int));
+            hack::lastTotalHits=1;*/
+        }
+        else
+        {
+            hack::lastTotalHits=iTotalHits;              
+        }
+        return true;
+    }
+    else if(iTotalHits>=255)
+    {
+        /*int one = 1;
+        csgo.Write((void*)localPlayer+0xABA8,&one,sizeof(int));
+        hack::lastTotalHits=1;*/
+    }
+    else
+    {
+        hack::lastTotalHits=iTotalHits;  
+    }
+    return false;
 }
 void hack::setupIsConnected()
 {
@@ -1294,7 +1330,7 @@ void hack::init()
     drawrcsCrosshair = ::atof(helper::getConfigValue("rcs_crosshair", cfg).c_str());
     staticCrosshair = ::atof(helper::getConfigValue("static_crosshair", cfg).c_str());
     aimbotMaxBullets = ::atof(helper::getConfigValue("max_aimbot_bullets", cfg).c_str());
-
+    drawHitmarker = ::atof(helper::getConfigValue("hitmarker", cfg).c_str());
     //check setting boundries
     if (flashMax < 0 || flashMax > 100)
     {
@@ -1321,6 +1357,7 @@ void hack::init()
     /* initialize random seed: */
     srand(time(NULL));
     iWeaponID_lp = -1;
+    lastTotalHits=0;
     spotted = 1;
     entityInCrossHair = false;
     preferredBones.reserve(8);

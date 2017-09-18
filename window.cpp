@@ -78,9 +78,26 @@ void qWindow::paintEvent(QPaintEvent *)
     pen.setColor(h.ShouldRCS ? greenTrue : redFalse);
     painter.setPen(pen);
     painter.drawText(settings::window::wind_width * .2, 95, (h.ShouldRCSToggleKey + " RCS: " + helper::AtomicBoolToString(&h.ShouldRCS)).c_str());
-
     if (h.IsConnected())
     {
+        static int waitForABit_it = -1;
+        if (h.drawHitmarker)
+        {
+            if (h.totalHitsIncreased())
+            {
+                qWindow::drawHitmarker(1.5, painter, pen);
+                waitForABit_it = 0;
+            }
+            else if (waitForABit_it < settings::misc::hitmarker_time && waitForABit_it != -1)
+            {
+                qWindow::drawHitmarker(1.5, painter, pen);                
+                waitForABit_it++;
+            }
+            else
+            {
+                waitForABit_it = -1;
+            }
+        }
         std::vector<std::string> spectators;
         spectators.reserve(64);
         for (int i = 0; i < 64; i++)
@@ -225,4 +242,14 @@ void qWindow::drawESPBoxes(std::array<EntityToScreen, 64> &entitiesToScreen, QPa
             painter.drawLine(entitiesToScreen[i].origin.x, entitiesToScreen[i].origin.y, settings::window::wind_width * settings::window::cofLineTetherX, settings::window::wind_height * settings::window::cofLineTetherY);
         }
     }
+}
+void qWindow::drawHitmarker(float width, QPainter &painter, QPen &pen)
+{
+    pen.setColor(QColor(255, 255, 255));
+    pen.setWidthF(width);
+    painter.setPen(pen);
+    painter.drawLine(settings::window::wind_width / 2 + 2, settings::window::wind_height / 2 + 2, settings::window::wind_width / 2 + 8, settings::window::wind_height / 2 + 8);
+    painter.drawLine(settings::window::wind_width / 2 + 2, settings::window::wind_height / 2 - 2, settings::window::wind_width / 2 + 8, settings::window::wind_height / 2 - 8);
+    painter.drawLine(settings::window::wind_width / 2 - 2, settings::window::wind_height / 2 + 2, settings::window::wind_width / 2 - 8, settings::window::wind_height / 2 + 8);
+    painter.drawLine(settings::window::wind_width / 2 - 2, settings::window::wind_height / 2 - 2, settings::window::wind_width / 2 - 8, settings::window::wind_height / 2 - 8);
 }

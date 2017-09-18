@@ -11,5 +11,8 @@ namespace settings {
     extern float cofLineTetherX; // multiplied by the screen width to determine
     // where the enemy lines are tethered to
   }
+  namespace misc{
+    extern int hitmarker_time;
+  }
 }
 #endif // SETTINGS_H
