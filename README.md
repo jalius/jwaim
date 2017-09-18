@@ -38,7 +38,7 @@ rename settings-example.cfg to settings.cfg and modify settings to your liking.
 run jwaim as super user:
 
 ```bash 
-gksudo ./jwaim
+sudo ./jwaim
 ```
 
 
