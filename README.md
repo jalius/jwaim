@@ -51,7 +51,8 @@ Aim Assist
 Glow  
 FOV Changer  
 RCS  
-RCS Crosshair  
+RCS Crosshair 
+HitMarker  
 ESP** - Boxes, Health, Line To Player, Name, Spectators, Player Status (Scoped/Defusing)
 
 ![Alt text](http://i.imgur.com/g2IU45i.jpg "screenshot")
