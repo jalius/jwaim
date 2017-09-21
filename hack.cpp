@@ -22,6 +22,9 @@ unsigned int offsets::m_AttributeManager = 0x34c0;     //todo: sig offset from e
 unsigned int offsets::m_iItemDefinitionIndex = 0x268;  //offset from m_Item (DataTable + 0x60) of DataTable to the weapon's economy ID
 
 int settings::misc::hitmarker_time = 8;
+float settings::misc::hitmarker_length = 10;
+float settings::misc::hitmarker_width = 1.5;
+
 
 static int SIX = 6;
 static int toggleOn = 5;
@@ -256,8 +259,8 @@ bool hack::getWorldToScreenData(std::array<EntityToScreen, 64> &output, Vector &
         {*/
         height.z += 74;
         //}
-        vecScreenOrigin = helper::WorldToScreen_(myActualPos, entitiesForScreen[i].entity.m_vecAbsOrigin, myTotalAng, float(FOV.iFOV));
-        vecScreenHeight = helper::WorldToScreen_(myActualPos, height, myTotalAng, float(FOV.iFOV));
+        vecScreenOrigin = helper::WorldToScreen(myActualPos, entitiesForScreen[i].entity.m_vecAbsOrigin, myTotalAng, float(FOV.iFOV));
+        vecScreenHeight = helper::WorldToScreen(myActualPos, height, myTotalAng, float(FOV.iFOV));
         if (vecScreenOrigin.x != -99999 && vecScreenHeight.x != -99999)
         {
             output[i].origin = vecScreenOrigin;
@@ -281,32 +284,38 @@ bool hack::totalHitsIncreased()
 {
     unsigned long localPlayer = 0;
     int iTotalHits = 0;
-    csgo.Read((void*)hack::m_addressOfLocalPlayer,&localPlayer,sizeof(unsigned long));
-    csgo.Read((void*)localPlayer+0xABA8,&iTotalHits,sizeof(int));
+    csgo.Read((void *)hack::m_addressOfLocalPlayer, &localPlayer, sizeof(unsigned long));
+    csgo.Read((void *)localPlayer + 0xABA8, &iTotalHits, sizeof(int));
     //cout<<"total hits: "<<iTotalHits<<" lastTotal: "<<lastTotalHits<<endl;
-    if(iTotalHits>hack::lastTotalHits)
+    if (iTotalHits > hack::lastTotalHits)
     {
-        if(iTotalHits>=255)
+        if (iTotalHits >= 255)
         {
             /*int one = 1;
             csgo.Write((void*)localPlayer+0xABA8,&one,sizeof(int));
             hack::lastTotalHits=1;*/
+            hack::lastTotalHits = 0;
+            return false;
+            //if the iTotalHits is greater than/equal to 255 then it stops updating until next round
         }
         else
         {
-            hack::lastTotalHits=iTotalHits;              
+            hack::lastTotalHits = iTotalHits;
         }
         return true;
     }
-    else if(iTotalHits>=255)
+    else if (iTotalHits >= 255)
     {
         /*int one = 1;
         csgo.Write((void*)localPlayer+0xABA8,&one,sizeof(int));
         hack::lastTotalHits=1;*/
+        hack::lastTotalHits = 0;
+        return false;
+        //if the iTotalHits is greater than/equal to 255 then it stops updating until next round
     }
     else
     {
-        hack::lastTotalHits=iTotalHits;  
+        hack::lastTotalHits = iTotalHits;
     }
     return false;
 }
@@ -377,10 +386,11 @@ void hack::aim()
     Vector theirPos;
     BoneMatrix theirBones;
 
-    static bool foundTarget;  //true while found a living target (not necessarily in fov)
-    bool shouldShoot = false; //true if our crosshair is close enough to the enemy and we should shoot
-    static bool isAiming;     //true if mouse was clicked when foundTarget == true. remains true until mouse is released. used to determine if we should snap to next target (based on rage mode or legit mode setting)
-    static bool acquiring;    //true if mouse clicked but didnt reach target yet. used to finish a shot in progress even when mouse is released early.
+    static bool foundTarget;             //true while found a living target (not necessarily in fov)
+    bool shouldShoot = false;            //true if our crosshair is close enough to the enemy and we should shoot
+    static bool isAiming = false;        //true if mouse was clicked when foundTarget == true. remains true until mouse is released. used to determine if we should snap to next target (based on rage mode or legit mode setting)
+    static bool acquiring = false;       //true if mouse clicked but didnt reach target yet. used to finish a shot in progress even when mouse is released early.
+    static bool alreadyShotOnce = false; //true if already shot once (so we can ignore acquiring)
 
     static unsigned int idclosestEnt = 0;
     float lowestDistance = -1.0; //used to determine the closest target in the entity loop
@@ -417,8 +427,8 @@ void hack::aim()
     myPos.y = myEnt.m_vecNetworkOrigin.y;
     myPos.z = myEnt.m_vecNetworkOrigin.z + myEnt.m_vecViewOffset.z;
 
-    if (!isAiming || ShouldRage)
-    { //if we aren't aiming or are in rage mode...
+    if ((!isAiming || ShouldRage) && AltTwo == 5)
+    { //if we aren't aiming or are in rage mode and we are clicking...
         idclosestEnt = 0;
         //aimbot block
         for (int i = 1; i < 64; i++)
@@ -454,14 +464,12 @@ void hack::aim()
                     continue; //skip this iteration
                 }
                 //cout<<"theirPos x, y, z "<<theirPos.x<<", "<<theirPos.y<<", "<<theirPos.z<<endl;
-
                 /* failed at creating a resolver
                 float lby;
                 csgo.Read((void*)entPtr+offsets::m_flLowerBodyYawTarget,&lby,sizeof(int));
                 if(true){
                       hack::resolve(&entitiesCopy[i].entity,&theirPos,lby);
                 }*/
-
                 aimDelta = helper::calcAngle(&myPos, &theirPos);
                 aimDelta.x -= viewAngle.x + (punch.x * 2); //calculate aimDelta in order to calculate xhair distance. aimDelta is angle to the player - (current angle + punch*2)
                 aimDelta.y -= viewAngle.y + (punch.y * 2);
@@ -471,15 +479,25 @@ void hack::aim()
                 //cout<<"networked angles x "<<entitiesCopy[i].entity.m_angNetworkAngles.x<<" y "<<entitiesCopy[i].entity.m_angNetworkAngles.y<<" z "<<entitiesCopy[i].entity.m_angNetworkAngles.z<<endl;
                 //cout<<"lby: "<<lby<<endl;
                 //cout<< "aimDelta.x, y = "<<aimDelta.x<<", "<<aimDelta.y<<endl;
-                float xhairDistance = helper::getDistanceFov(&aimDelta, &myPos, &theirPos);
+                float xhairDistance = -1;
+                if (hack::useDistanceBasedFOV)
+                {
+                    xhairDistance = helper::getDistanceFov(&aimDelta, &myPos, &theirPos);
+                }
+                else
+                {
+                    xhairDistance = helper::getAngleBasedFOV(aimDelta);
+                }
                 //cout<< "aimDelta.x, y = "<<aimDelta.x<<", "<<aimDelta.y<<" xhair, entid: "<<xhairDistance<<" "<<i<<endl;
                 //cout<<lowestDistance<<" <- lowest - cur distance -> "<<xhairDistance<<endl;
                 //cout<<" i "<<i<<" entID "<<entitiesCopy[i].entity.ID<<endl;
-                if (xhairDistance <= lowestDistance || lowestDistance == -1.0)
+                cout << "xhair dist mainloop " << xhairDistance << endl;
+                if (xhairDistance != -1 && (xhairDistance <= lowestDistance || lowestDistance == -1.0))
                 {
                     lowestDistance = xhairDistance;
                     idclosestEnt = entitiesCopy[i].entity.ID;
                     foundTarget = true;
+                    alreadyShotOnce = false;
                     //cout<<foundTarget<<endl;
                 }
             }
@@ -526,19 +544,41 @@ void hack::aim()
             aimDelta.x -= viewAngle.x + (punch.x * 2);
             aimDelta.y -= viewAngle.y + (punch.y * 2);
             helper::clampAngle(&aimDelta);
-            float xhairDistance = helper::getDistanceFov(&aimDelta, &myPos, &theirPos);
-            lowestDistance = xhairDistance;
-            if ((lowestDistance <= fov || fov == 0) && lowestDistance != -1.0)
+            float xhairDistance = -1;
+            float angleBasedFOV = -1;
+            float distanceBasedFOV = -1;
+            angleBasedFOV = helper::getAngleBasedFOV(aimDelta);
+            distanceBasedFOV = helper::getDistanceFov(&aimDelta, &myPos, &theirPos);
+            if (hack::useDistanceBasedFOV)
+            {
+                xhairDistance = distanceBasedFOV;
+            }
+            else
+            {
+                xhairDistance = angleBasedFOV;
+            }
+            cout << "xhair dist " << xhairDistance << endl;
+            if ((xhairDistance <= fov || fov == 0) && xhairDistance != -1.0)
             {
                 //cout<<"lowestDistance "<<lowestDistance<<endl;
-                acquiring = true;
-                newAngle = helper::calcAngle(&myPos, &theirPos);
-                newAngle.x -= punch.x * 2;
-                newAngle.y -= punch.y * 2;
-                //cout<<"newAngle.x "<<newAngle.x<<" newAngle.y "<<newAngle.y<<endl;
-                if (lowestDistance < shootDistance)
+                if (!alreadyShotOnce) //if we didnt already shoot, start searching for target
                 {
-                    helper::Smoothing(&viewAngle, &newAngle, percentSmoothing / 20);
+                    acquiring = true;
+                }
+                else //if we did already shoot we can stop looking for target
+                {
+                    acquiring = false;
+                }
+                newAngle = helper::calcAngle(&myPos, &theirPos);
+                if (!helper::ShouldNotRCS(iWeaponID_lp))
+                {
+                    newAngle.x -= punch.x * 2;
+                    newAngle.y -= punch.y * 2;
+                }
+                //cout<<"newAngle.x "<<newAngle.x<<" newAngle.y "<<newAngle.y<<endl;
+                if (distanceBasedFOV < shootDistance) //use distance based fov to calculate accurately whether or not we are on target and ready to shoot
+                {
+                    helper::Smoothing(&viewAngle, &newAngle, percentSmoothing / 20); //reduce smoothing because we are already on target
                     shouldShoot = true;
                 }
                 else
@@ -552,18 +592,17 @@ void hack::aim()
                 shouldShoot = true;
             }
         }
-        if (AltTwo == 4)
+        else if (AltTwo == 4)
         {
             isAiming = false;
         }
     }
-
     //rcs block
     if (!isAiming && ShouldRCS)
     {
         if (ShouldRCS)
         {
-            if ((punchDelta.y != 0.0 || punchDelta.x != 0.0) && (shotsFired > 1))
+            if ((punchDelta.y != 0.0 || punchDelta.x != 0.0) && (shotsFired > 1) && !helper::ShouldNotRCS(iWeaponID_lp))
             {
                 //seeout<<shotsFired<<endl;
                 newAngle.x -= punchDelta.x * 2; //new camera angle is the old camera angle minus the change in view punch angle *2 (because it works)
@@ -582,13 +621,14 @@ void hack::aim()
         //cout<<"set vang"<<endl;
     }
     if (foundTarget && idclosestEnt != 0)
-    { //if we found the target and its not the world or unset
-        if (AltTwo == 5)
+    {                    //if we found the target and its not the world or unset
+        if (AltTwo == 5) //if we are actively clicking
         {
-            if (shouldShoot)
+            if (shouldShoot) //if we should shoot
             {
                 csgo.Write((void *)m_addressOfForceAttack, &toggleOn, sizeof(int));
                 usleep(10000);
+                alreadyShotOnce = true;
             }
         }
         else
@@ -597,13 +637,14 @@ void hack::aim()
             {
                 csgo.Write((void *)m_addressOfForceAttack, &toggleOff, sizeof(int));
             }
-            if (acquiring && shouldShoot)
+            if (acquiring && shouldShoot) //if we are acquiring our target, and we are in range of our target
             {
                 csgo.Write((void *)m_addressOfForceAttack, &toggleOn, sizeof(int));
                 usleep(40000);
                 csgo.Write((void *)m_addressOfForceAttack, &toggleOff, sizeof(int));
                 usleep(10000);
-                acquiring = false;
+                acquiring = false; //set acquiring to false because we reached our target
+                alreadyShotOnce = true;
             }
         }
     }
@@ -664,7 +705,7 @@ int hack::getClosestBone(unsigned long m_pStudioBonesPtr, std::vector<int> &bone
         aimDelta.x -= curViewAngle.x + aimPunch.x * 2; //calculate aimDelta in order to calculate xhair distance
         aimDelta.y -= curViewAngle.y + aimPunch.y * 2;
         helper::clampAngle(&aimDelta);
-        float distanceToBone = helper::getDistanceFov(&aimDelta, &myPos, &bonePos);
+        float distanceToBone = helper::getAngleBasedFOV(aimDelta);
         if (distanceToBone <= closestDistanceToBone || closestDistanceToBone == -1.0)
         {
             closestDistanceToBone = distanceToBone;
@@ -1320,17 +1361,21 @@ void hack::init()
     ShouldRCS = false;
     ShouldAimAssist = true;
     preferredBone = ::atof(helper::getConfigValue("bone", cfg).c_str());
-    fov = ::atof(helper::getConfigValue("fov", cfg).c_str());
-    flashMax = ::atof(helper::getConfigValue("flash_max", cfg).c_str());
-    viewFov = ::atof(helper::getConfigValue("custom_fov", cfg).c_str());
-    percentSmoothing = ::atof(helper::getConfigValue("aim_smooth", cfg).c_str());
-    noHands = ::atof(helper::getConfigValue("no_hands", cfg).c_str());
-    shootFriends = ::atof(helper::getConfigValue("shoot_friends", cfg).c_str());
-    legitGlow = ::atof(helper::getConfigValue("legit_glow", cfg).c_str());
-    drawrcsCrosshair = ::atof(helper::getConfigValue("rcs_crosshair", cfg).c_str());
-    staticCrosshair = ::atof(helper::getConfigValue("static_crosshair", cfg).c_str());
-    aimbotMaxBullets = ::atof(helper::getConfigValue("max_aimbot_bullets", cfg).c_str());
-    drawHitmarker = ::atof(helper::getConfigValue("hitmarker", cfg).c_str());
+    hack::fov = ::atof(helper::getConfigValue("fov", cfg).c_str());
+    hack::flashMax = ::atof(helper::getConfigValue("flash_max", cfg).c_str());
+    hack::viewFov = ::atof(helper::getConfigValue("custom_fov", cfg).c_str());
+    hack::percentSmoothing = ::atof(helper::getConfigValue("aim_smooth", cfg).c_str());
+    hack::noHands = ::atof(helper::getConfigValue("no_hands", cfg).c_str());
+    hack::shootFriends = ::atof(helper::getConfigValue("shoot_friends", cfg).c_str());
+    hack::legitGlow = ::atof(helper::getConfigValue("legit_glow", cfg).c_str());
+    hack::drawrcsCrosshair = ::atof(helper::getConfigValue("rcs_crosshair", cfg).c_str());
+    hack::staticCrosshair = ::atof(helper::getConfigValue("static_crosshair", cfg).c_str());
+    hack::aimbotMaxBullets = ::atof(helper::getConfigValue("max_aimbot_bullets", cfg).c_str());
+    hack::drawHitmarker = ::atof(helper::getConfigValue("hitmarker", cfg).c_str());
+    hack::useDistanceBasedFOV = ::atof(helper::getConfigValue("distance_based_fov", cfg).c_str());
+    settings::misc::hitmarker_time = ::atof(helper::getConfigValue("hitmarker_time",cfg).c_str());
+    settings::misc::hitmarker_width = ::atof(helper::getConfigValue("hitmarker_width",cfg).c_str());
+    settings::misc::hitmarker_length = ::atof(helper::getConfigValue("hitmarker_length",cfg).c_str());
     //check setting boundries
     if (flashMax < 0 || flashMax > 100)
     {
@@ -1341,6 +1386,10 @@ void hack::init()
     {
         percentSmoothing = .2;
         cout << "smoothstep amount less than 0. \nSetting percentSmoothing to .20." << endl;
+    }
+    if (hack::useDistanceBasedFOV)
+    {
+        fov *= 7.5; //scale fov if in distance based mode (keep things consistent)
     }
     if (fov < 0)
     {
@@ -1357,7 +1406,7 @@ void hack::init()
     /* initialize random seed: */
     srand(time(NULL));
     iWeaponID_lp = -1;
-    lastTotalHits=0;
+    lastTotalHits = 0;
     spotted = 1;
     entityInCrossHair = false;
     preferredBones.reserve(8);

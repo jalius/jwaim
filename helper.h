@@ -12,20 +12,21 @@
 #include "atomic"
 namespace helper
 {
-        bool WorldToScreen(const Vector &vecOrigin, Vector &vecScreen, float *pflViewMatrix );
         void clampAngle(QAngle *angle);
         void Smoothing(QAngle* source,QAngle* target, float percentSmoothing);
-        float getDistanceFov(QAngle*delta, Vector* sourcePos,Vector* targetPos);
+        float getDistanceFov(QAngle*delta, Vector* sourcePos,Vector * targetPos);
+        float getAngleBasedFOV(const QAngle &aimDelta);
         QAngle calcAngle(Vector *source, Vector *target);
         bool IgnoreWeapon(int iWeaponID);
         bool ShouldAutoShoot(int iWeaponID);
         void resolve(Entity* ent,Vector* target, float lby);
         std::string getConfigValue(std::string property, libconfig::Config &cfg);
         BoneMatrix getBones(void* bonePtr, int bone);
-        Vector WorldToScreen_(Vector &camerapos,Vector &enemy, QAngle &myvang, float FOV);
+        Vector WorldToScreen(Vector &camerapos,Vector &enemy, QAngle &myvang, float FOV); //2d vector
         float fShootDistance(int bone);
-        Vector RecoilCrosshair(QAngle &vpunch, float FOV);
+        Vector RecoilCrosshair(QAngle &vpunch, float FOV); //2d vector
         std::string AtomicBoolToString(std::atomic<bool> *b);
+        bool ShouldNotRCS( int iWeaponID );
 }
 
 #endif // HELPER_H

@@ -158,6 +158,7 @@ public:
     bool staticCrosshair;
     bool drawHitmarker;
     int aimbotMaxBullets;//the amount of bullets after which the aimbot stops tracking (for "legit" cheaters)
+    bool useDistanceBasedFOV;
     //end settings
     bool getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &rcsCross);
 
