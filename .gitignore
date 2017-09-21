@@ -75,3 +75,4 @@ jwaim
 *.pro.user
 *.user
 .vscode
+settings.cfg
