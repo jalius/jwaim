@@ -491,7 +491,6 @@ void hack::aim()
                 //cout<< "aimDelta.x, y = "<<aimDelta.x<<", "<<aimDelta.y<<" xhair, entid: "<<xhairDistance<<" "<<i<<endl;
                 //cout<<lowestDistance<<" <- lowest - cur distance -> "<<xhairDistance<<endl;
                 //cout<<" i "<<i<<" entID "<<entitiesCopy[i].entity.ID<<endl;
-                cout << "xhair dist mainloop " << xhairDistance << endl;
                 if (xhairDistance != -1 && (xhairDistance <= lowestDistance || lowestDistance == -1.0))
                 {
                     lowestDistance = xhairDistance;
@@ -557,7 +556,6 @@ void hack::aim()
             {
                 xhairDistance = angleBasedFOV;
             }
-            cout << "xhair dist " << xhairDistance << endl;
             if ((xhairDistance <= fov || fov == 0) && xhairDistance != -1.0)
             {
                 //cout<<"lowestDistance "<<lowestDistance<<endl;
