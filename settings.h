@@ -13,6 +13,8 @@ namespace settings {
   }
   namespace misc{
     extern int hitmarker_time;
+    extern float hitmarker_width;
+    extern float hitmarker_length;
   }
 }
 #endif // SETTINGS_H

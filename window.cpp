@@ -85,12 +85,12 @@ void qWindow::paintEvent(QPaintEvent *)
         {
             if (h.totalHitsIncreased())
             {
-                qWindow::drawHitmarker(1.5, painter, pen);
+                qWindow::drawHitmarker(settings::misc::hitmarker_width, painter, pen);
                 waitForABit_it = 0;
             }
             else if (waitForABit_it < settings::misc::hitmarker_time && waitForABit_it != -1)
             {
-                qWindow::drawHitmarker(1.5, painter, pen);                
+                qWindow::drawHitmarker(settings::misc::hitmarker_width, painter, pen);                
                 waitForABit_it++;
             }
             else
@@ -248,8 +248,8 @@ void qWindow::drawHitmarker(float width, QPainter &painter, QPen &pen)
     pen.setColor(QColor(255, 255, 255));
     pen.setWidthF(width);
     painter.setPen(pen);
-    painter.drawLine(settings::window::wind_width / 2 + 2, settings::window::wind_height / 2 + 2, settings::window::wind_width / 2 + 8, settings::window::wind_height / 2 + 8);
-    painter.drawLine(settings::window::wind_width / 2 + 2, settings::window::wind_height / 2 - 2, settings::window::wind_width / 2 + 8, settings::window::wind_height / 2 - 8);
-    painter.drawLine(settings::window::wind_width / 2 - 2, settings::window::wind_height / 2 + 2, settings::window::wind_width / 2 - 8, settings::window::wind_height / 2 + 8);
-    painter.drawLine(settings::window::wind_width / 2 - 2, settings::window::wind_height / 2 - 2, settings::window::wind_width / 2 - 8, settings::window::wind_height / 2 - 8);
+    painter.drawLine(settings::window::wind_width / 2 + 3, settings::window::wind_height / 2 + 3, settings::window::wind_width / 2 + settings::misc::hitmarker_length, settings::window::wind_height / 2 + settings::misc::hitmarker_length);
+    painter.drawLine(settings::window::wind_width / 2 + 3, settings::window::wind_height / 2 - 3, settings::window::wind_width / 2 + settings::misc::hitmarker_length, settings::window::wind_height / 2 - settings::misc::hitmarker_length);
+    painter.drawLine(settings::window::wind_width / 2 - 3, settings::window::wind_height / 2 + 3, settings::window::wind_width / 2 - settings::misc::hitmarker_length, settings::window::wind_height / 2 + settings::misc::hitmarker_length);
+    painter.drawLine(settings::window::wind_width / 2 - 3, settings::window::wind_height / 2 - 3, settings::window::wind_width / 2 - settings::misc::hitmarker_length, settings::window::wind_height / 2 - settings::misc::hitmarker_length);
 }
