@@ -159,6 +159,7 @@ public:
     bool drawHitmarker;
     int aimbotMaxBullets;//the amount of bullets after which the aimbot stops tracking (for "legit" cheaters)
     bool useDistanceBasedFOV;
+    bool drawESP;
     //end settings
     bool getWorldToScreenData(std::array<EntityToScreen,64> &output, Vector &rcsCross);
 

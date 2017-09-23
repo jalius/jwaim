@@ -1349,12 +1349,12 @@ void hack::init()
     cout << "offsets::m_iObserveCamType: " << offsets::m_iObserveCamType << endl;
     cout << "offsets::m_pStudioBones: " << offsets::m_pStudioBones << endl;
     cout << "offsets::m_iFOV: " << offsets::m_iFOV << endl;
-    //settings
+    //settings defaults
     ShouldGlow = false;
-    ShouldRadarHack = true;
+    ShouldRadarHack = false;
     ShouldBhop = false;
-    ShouldESP = true;
-    ShouldNoFlash = true;
+    ShouldESP = false;
+    ShouldNoFlash = false;
     ShouldRage = false;
     ShouldRCS = false;
     ShouldAimAssist = true;
@@ -1374,6 +1374,7 @@ void hack::init()
     settings::misc::hitmarker_time = ::atof(helper::getConfigValue("hitmarker_time",cfg).c_str());
     settings::misc::hitmarker_width = ::atof(helper::getConfigValue("hitmarker_width",cfg).c_str());
     settings::misc::hitmarker_length = ::atof(helper::getConfigValue("hitmarker_length",cfg).c_str());
+    drawESP = ::atof(helper::getConfigValue("draw_overlay",cfg).c_str());
     //check setting boundries
     if (flashMax < 0 || flashMax > 100)
     {

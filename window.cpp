@@ -2,7 +2,7 @@
 
 int i = 0;
 qWindow::qWindow(QWidget *parent) : QWidget(parent)
-{
+{ 
     QSize size = qApp->screens()[0]->size();
     settings::window::wind_height = size.height();
     settings::window::wind_width = size.width();

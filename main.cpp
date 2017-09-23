@@ -83,7 +83,10 @@ void checkKeysLoop(){
     return;
 }
 int execQApp(){
-    cout<<"exec q app"<<endl;
+    if(!h.drawESP)
+    {
+        return 420;
+    }
     char *argv[] = {"window", NULL};
     int argc = sizeof(argv) / sizeof(char*) - 1;
     QApplication app(argc,argv);
@@ -102,7 +105,7 @@ int main()
     std::thread ms(multiSlowLoop);
     std::thread b(bhopLoop);
     std::thread c(checkKeysLoop);
-    std::thread q(execQApp);
+    std::thread q(execQApp);    
     c.join();
     return 0;
 }
