@@ -14,26 +14,28 @@ github.com user thisgamesux
 Thanks to every helpful person at unknowncheats!
 
 # installing and running
-install additional dependencies
+1. install additional dependencies
 ```bash
 sudo apt-get install libboost-all-dev libx11-dev libx11-dev:i386 libxtst-dev libconfig++-dev build-essential qt5-default
 ```
 
-install the dependencies (above).
+2. navigate to the base directory (usually ~/jwaim).
+```bash
+cd jwaim
+```
 
-navigate to the base directory (usually ~/jwaim).
-
-setup makefile with qmake
+3. setup makefile with qmake
 ```bash
 qmake ./jwaim.pro
 ```
-compile program
+
+4. compile program
 ```bash
 make
 ```
-rename settings_example.cfg to settings.cfg and modify settings to your liking.
+5. rename settings_example.cfg to settings.cfg and modify settings to your liking.
 
-run jwaim as superuser
+6. run jwaim as superuser
 
 ```bash 
 sudo ./jwaim
