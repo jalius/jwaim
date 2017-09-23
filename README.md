@@ -33,9 +33,9 @@ run command:
 ```bash
 make
 ```
-rename settings-example.cfg to settings.cfg and modify settings to your liking.
+rename settings_example.cfg to settings.cfg and modify settings to your liking.
 
-run jwaim as super user:
+run jwaim as superuser:
 
 ```bash 
 sudo ./jwaim
