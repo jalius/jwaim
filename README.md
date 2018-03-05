@@ -40,6 +40,11 @@ make
 ```bash 
 sudo ./jwaim
 ```
+7. setup required keybinds (developer console: ~)
+```
+bind mouse1 +alt2
+bind space +alt1
+```
 
 
 NOTE:
