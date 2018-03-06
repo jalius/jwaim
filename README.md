@@ -15,6 +15,7 @@ Thanks to every helpful person at unknowncheats!
 
 # community
 join the discord for setup help and other questions
+
 https://discord.gg/wP9R28M
 # installing and running
 1. install additional dependencies
