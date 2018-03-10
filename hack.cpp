@@ -830,15 +830,10 @@ bool hack::glow()
 
     unsigned long localPlayer = 0;
     csgo.Read((void *)m_addressOfLocalPlayer, &localPlayer, sizeof(long));
-
-    char myLifeXD = LIFE_DEAD;
+    Entity local = {};
     if (localPlayer != 0)
     {
-        csgo.Read((void *)(unsigned long)localPlayer, &myLifeXD, sizeof(char));
-        if (myLifeXD != LIFE_ALIVE)
-        {
-            //return false;
-        }
+        csgo.Read((void *)(unsigned long)localPlayer, &local, sizeof(Entity));
     }
     hack::CGlowObjectManager manager;
 
@@ -860,12 +855,7 @@ bool hack::glow()
     }
 
     size_t writeCount = 0;
-    unsigned int teamNumber = 0;
-    if (localPlayer != 0)
-    {
-        csgo.Read((void *)(localPlayer + 0x128), &teamNumber, sizeof(int)); //m_iTeamNumber
-        //csgo.Read((void*) (localPlayer), &(myEnt), sizeof(int));
-    }
+    unsigned int teamNumber = local.m_iTeamNum;
     int ActiveWeaponEntID = getActiveWeaponEntityID(localPlayer);
     for (unsigned int i = 0; i < count; i++)
     {
@@ -915,9 +905,9 @@ bool hack::glow()
 
                 g_glow[i].m_bRenderWhenOccluded = 1;
                 g_glow[i].m_bRenderWhenUnoccluded = 0;
-                //int spottedByMask = 0;
-                //csgo.Read((void*)g_glow[i].m_pEntity+0xf10,&spottedByMask, sizeof(int));
-                //bool spottedByMe = (spottedByMask>>myEntId-1)&1;
+                int spottedByMask = 0;
+                csgo.Read((void*)g_glow[i].m_pEntity+0xf10,&spottedByMask, sizeof(int));
+                bool spottedByMe = (spottedByMask>>local.ID-1)&1;
                 if (ent.m_iTeamNum == 2 || ent.m_iTeamNum == 3)
                 {
                     /*cout<<"ent ID " <<ent.ID<<" teamid "<<ent.m_iTeamNum;
@@ -947,14 +937,14 @@ bool hack::glow()
                             g_glow[i].m_flGlowRed = 0.878431;   //spottedByMe ? colors[4] : colors[0];
                             g_glow[i].m_flGlowGreen = 0.686275; // spottedByMe ? colors[5] : colors[1];
                             g_glow[i].m_flGlowBlue = 0.337255;  //spottedByMe  ? colors[6] : colors[2];
-                            g_glow[i].m_flGlowAlpha = .6;       //spottedByMe  ? colors[7] : colors[3];
+                            g_glow[i].m_flGlowAlpha = spottedByMe ? 0.6 : 0;       //spottedByMe  ? colors[7] : colors[3];
                         }
                         else if (ent.m_iTeamNum == 3)
                         {
                             g_glow[i].m_flGlowRed = 0.447059;
                             g_glow[i].m_flGlowGreen = 0.607843;
                             g_glow[i].m_flGlowBlue = 0.866667;
-                            g_glow[i].m_flGlowAlpha = 0.6;
+                            g_glow[i].m_flGlowAlpha = spottedByMe ? 0.6 : 0;
                         }
                     }
                 }
