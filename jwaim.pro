@@ -31,4 +31,4 @@ LIBS += \
 DISTFILES += \
     settings.cfg
 
-
+system(cp -n settings_example.cfg settings.cfg)
