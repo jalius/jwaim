@@ -18,7 +18,11 @@ join the discord for setup help and other questions
 
 https://discord.gg/wP9R28M
 # installing and running
-1. install additional dependencies
+1. clone the repo
+```bash
+https://github.com/bluuman/jwaim/
+```
+2. install dependencies
 
 Debian:
 ```bash
@@ -29,28 +33,28 @@ Arch (thanks eclip):
 sudo pacman -S boost-libs libx11 libxtst libconfig base-devel qt5
 ```
 
-2. navigate to the base directory (usually ~/jwaim).
+3. navigate to the base directory (usually ~/jwaim).
 ```bash
 cd jwaim
 ```
 
-3. setup makefile with qmake
+4. setup makefile with qmake
 ```bash
 qmake ./jwaim.pro
 ```
 
-4. compile program
+5. compile program
 ```bash
 make
 ```
-5. rename settings_example.cfg to settings.cfg and modify settings to your liking.
+6. rename settings_example.cfg to settings.cfg and modify settings to your liking.
 
-6. run jwaim as superuser
+7. run jwaim as superuser
 
 ```bash 
 sudo ./jwaim
 ```
-7. setup required keybinds (developer console: ~)
+8. setup required keybinds (developer console: ~)
 ```
 bind mouse1 +alt2
 bind space +alt1
