@@ -20,7 +20,7 @@ https://discord.gg/wP9R28M
 # installing and running
 1. clone the repo
 ```bash
-https://github.com/bluuman/jwaim/
+git clone https://github.com/bluuman/jwaim/
 ```
 2. install dependencies
 
