@@ -1,3 +1,4 @@
+![Alt text](https://i.imgur.com/xmjycBr.jpg "another screenshot")
 # jwaim - csgo multi-cheat for linux
 This is a cheat for the 64 bit linux csgo (tested on ubuntu 17.04)  
 It utilizes QT graphics library to draw ESP and other info on screen  
@@ -70,4 +71,3 @@ HitMarker
 ESP** - Boxes, Health, Line To Player, Name, Spectators, Player Status (Scoped/Defusing)
 
 ![Alt text](http://i.imgur.com/g2IU45i.jpg "screenshot")
-![Alt text](https://i.imgur.com/xmjycBr.jpg "another screenshot")
