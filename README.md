@@ -8,15 +8,10 @@ If you were wondering, I wrote this cheat almost entirely from scratch. I used a
 
 Development started 7/1/17  
 
-Credits to: 
-github.com user thisgamesux
-
-Thanks to every helpful person at unknowncheats!
-
 # community
 join the discord for setup help and other questions
 
-https://discord.gg/wP9R28M
+https://discord.gg/59dJJYN
 # installing and running
 1. clone the repo
 ```bash
