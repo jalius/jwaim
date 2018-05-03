@@ -1,5 +1,5 @@
-![Alt text](https://i.imgur.com/xmjycBr.jpg "another screenshot")
 # jwaim - csgo multi-cheat for linux
+![Alt text](https://i.imgur.com/xmjycBr.jpg "another screenshot")
 This is a cheat for the 64 bit linux csgo (tested on ubuntu 17.04)  
 It utilizes QT graphics library to draw ESP and other info on screen  
 
