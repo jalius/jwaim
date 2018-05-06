@@ -92,7 +92,7 @@ int execQApp(){
     QApplication app(argc,argv);
     qWindow mainWindow;
     QFont font ("Courier", 30, 100);
-    mainWindow.showFullScreen();// Create an instance of your woker
+    mainWindow.showFullScreen();
     return app.exec();
 }
 int main()
