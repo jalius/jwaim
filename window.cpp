@@ -1,5 +1,4 @@
 #include <QX11Info>
-
 #include "window.h"
 
 int i = 0;
@@ -23,9 +22,11 @@ void qWindow::showEvent(QShowEvent *event)
 {
 
     QWidget::showEvent(event);
-    if (!QX11Info::isCompositingManagerRunning()) {
-        qInfo() << "No compositing manager found.  Disabling overlay.";
-        QTimer::singleShot(0, this, &QWidget::hide);
+    if (QX11Info::isPlatformX11()) {
+        if (!QX11Info::isCompositingManagerRunning()) {
+            qInfo() << "No compositing manager found.  Disabling overlay.";
+            QTimer::singleShot(0, this, &QWidget::hide);
+        }
     }
 }
 
