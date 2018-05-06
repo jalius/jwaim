@@ -28,6 +28,7 @@ private:
      QPushButton *m_button;
 protected:
     void paintEvent(QPaintEvent *event);
+    void showEvent(QShowEvent *event) override;
 signals:
 
 public slots:
