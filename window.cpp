@@ -1,5 +1,6 @@
 #include <QX11Info>
 #include "window.h"
+#include "monitor.h"
 
 int i = 0;
 qWindow::qWindow(QWidget *parent) : QWidget(parent)
@@ -174,10 +175,16 @@ void qWindow::paintEvent(QPaintEvent *)
 }
 void qWindow::callback()
 {
-    std::fill(begin(entitiesToScreen), end(entitiesToScreen), EntityToScreen{});
-    h.getWorldToScreenData(entitiesToScreen, rcsCross);
-    update();
-    QTimer::singleShot(16, this, SLOT(callback()));
+    if (isCSGOActive()) {
+        show();
+        std::fill(begin(entitiesToScreen), end(entitiesToScreen), EntityToScreen{});
+        h.getWorldToScreenData(entitiesToScreen, rcsCross);
+        update();
+        QTimer::singleShot(16, this, &qWindow::callback);
+    }else {
+        hide();
+        QTimer::singleShot(1000, this, &qWindow::callback);
+    }
 }
 void qWindow::drawESPBoxes(std::array<EntityToScreen, 64> &entitiesToScreen, QPainter &painter, QPen &pen, QFont &font)
 {
