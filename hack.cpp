@@ -576,12 +576,12 @@ void hack::aim()
                 //cout<<"newAngle.x "<<newAngle.x<<" newAngle.y "<<newAngle.y<<endl;
                 if (distanceBasedFOV < shootDistance) //use distance based fov to calculate accurately whether or not we are on target and ready to shoot
                 {
-                    helper::Smoothing(&viewAngle, &newAngle, percentSmoothing / 20); //reduce smoothing because we are already on target
+                    helper::Smoothing(&viewAngle, &newAngle, percentSmoothing / 20, willsalt, errormargin); //reduce smoothing because we are already on target
                     shouldShoot = true;
                 }
                 else
                 {
-                    helper::Smoothing(&viewAngle, &newAngle, percentSmoothing);
+                    helper::Smoothing(&viewAngle, &newAngle, percentSmoothing, willsalt, errormargin);
                 }
                 isAiming = true;
             }
@@ -712,6 +712,22 @@ int hack::getClosestBone(unsigned long m_pStudioBonesPtr, std::vector<int> &bone
     }
     return closestBone;
 }
+
+void hack::click() {
+    if(ShouldClick){
+        unsigned int attack = 0x5;
+        unsigned int release = 0x4;
+        unsigned int isFiring;
+        csgo.Read((void*) (m_addressOfForceAttack), &isFiring, sizeof(int));
+        if(isFiring == attack && helper::ShouldAutoShoot(iWeaponID_lp)){
+            csgo.Write((void*) (m_addressOfForceAttack), &attack, sizeof(int));
+            std::this_thread::sleep_for(std::chrono::microseconds(7));
+            csgo.Write((void*) (m_addressOfForceAttack), &release, sizeof(int));
+            std::this_thread::sleep_for(std::chrono::microseconds(4));
+        }
+    }
+}
+
 void hack::setVAng(QAngle *newAngle, unsigned long addressOfViewAngle)
 {
     helper::clampAngle(newAngle);
@@ -733,10 +749,10 @@ void hack::bhop()
         {
             //cout<<"jumping\n:)"<<endl;
             csgo.Write((void *)((unsigned long)m_addressOfJump), &SIX, sizeof(int));
-            /*XFlush(display);
-            XTestFakeKeyEvent(display, 65, true, 0);
-            this_thread::sleep_for(chrono::milliseconds(1));
-            XTestFakeKeyEvent(display, 65, false, 0);*/
+            //XFlush(display);
+            //XTestFakeKeyEvent(display, 65, true, 0);
+            this_thread::sleep_for(chrono::microseconds(100));
+            //XTestFakeKeyEvent(display, 65, false, 0);
         }
     }
     else
@@ -745,12 +761,18 @@ void hack::bhop()
         {
             //cout<<"jumping\n:)"<<endl;
             csgo.Write((void *)((unsigned long)m_addressOfJump), &toggleOn, sizeof(int));
-            this_thread::sleep_for(chrono::microseconds(500));
+            this_thread::sleep_for(chrono::microseconds(100));
+            //XFlush(display);
+            //XTestFakeKeyEvent(display, 65, true, 0);
+            //this_thread::sleep_for(chrono::milliseconds(1));
         }
         else
         {
             csgo.Write((void *)((unsigned long)m_addressOfJump), &toggleOff, sizeof(int));
-            this_thread::sleep_for(chrono::microseconds(500));
+            //this_thread::sleep_for(chrono::microseconds(100));
+            //XFlush(display);
+            //XTestFakeKeyEvent(display, 65, false, 0);
+            this_thread::sleep_for(chrono::microseconds(100));
         }
     }
 }
@@ -883,6 +905,33 @@ bool hack::glow()
                     g_glow[i].m_bRenderWhenUnoccluded = 0;
                     continue;
                 }
+/*
+                if(ShouldTrigger) {
+                    bool entityInCrossHair = false;
+                        if (localPlayer != 0) {
+                            if (ent.m_iTeamNum != teamNumber) {
+                                unsigned int crossHairId = 0;
+                                unsigned int entityId = 0;
+                                unsigned int attack = 0x5;
+                                unsigned int release = 0x4;
+                                csgo.Read((void*) (m_iCrosshairID), &crossHairId, sizeof(int));
+                                csgo.Read((void*) (g_glow[i].m_pEntity + 0x94), &entityId, sizeof(int));
+
+                                if (crossHairId == entityId) {
+                                    entityInCrossHair = true;
+                                    unsigned int shooting;
+                                    csgo.Read((void*) (m_addressOfForceAttack), &shooting, sizeof(int));
+                                    if (shooting != attack) {
+                                        usleep(100);
+                                        csgo.Write((void*) (m_addressOfForceAttack), &attack, sizeof(int));
+                                        usleep(100);
+                                        csgo.Write((void*) (m_addressOfForceAttack), &release, sizeof(int));
+                                    }
+                                }
+                            }
+                        }
+                }
+*/
                 if (ShouldRadarHack)
                 {
                     csgo.Write((void *)((unsigned long)g_glow[i].m_pEntity + offsets::m_bIsSpotted), &spotted, sizeof(unsigned char));
@@ -967,6 +1016,7 @@ bool hack::glow()
     }
     process_vm_writev(csgo.GetPid(), g_local, writeCount, g_remote, writeCount, 0);
     hack::writeEntities(entitiesLocal);
+    return true;
 }
 /*void hack::setWindowInfo(){
     WindowsMatchingPid match(hack::display,XDefaultRootWindow(hack::display),int(csgo.GetPid()));
@@ -983,25 +1033,7 @@ bool hack::glow()
         }
     }
 }*/
-/*void hack::trigger(){
-    if(ShouldTrigger&&entityInCrossHair){
-        /*XFlush(display);
-        XTestFakeButtonEvent(display, Button1, true, 0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        XTestFakeButtonEvent(display, Button1, false, 0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));/*
-        unsigned int attack = 0x5;
-        unsigned int release = 0x4;
-        unsigned int shooting;
-        csgo.Read((void*) (m_addressOfForceAttack), &shooting, sizeof(int));
-        if(shooting!=attack){
-            cout<<"we should be shooting"<<endl;
-            csgo.Write((void*) (m_addressOfForceAttack), &attack, sizeof(int));
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
-            csgo.Write((void*) (m_addressOfForceAttack), &release, sizeof(int));
-        }
-    }
-}*/
+
 bool hack::checkKeys()
 {
     if (csgo.IsRunning())
@@ -1059,6 +1091,11 @@ bool hack::checkKeys()
                             ShouldAimAssist = !ShouldAimAssist;
                             cout << "Aim: " << ShouldAimAssist << endl;
                         }
+                        else if (code == keycodeClick)
+                        {
+                            ShouldClick = !ShouldClick;
+                            cout << "Click: " << ShouldClick << endl;
+                        }
                     }
                 }
             }
@@ -1086,6 +1123,7 @@ int hack::getActiveWeaponEntityID(unsigned long entityPtr)
 }
 void hack::init()
 {
+    cout << "CS:GO external hack for linux" << endl;
     if (getuid() != 0)
     {
         cout << "Cannot start as NON ROOT user.";
@@ -1139,7 +1177,11 @@ void hack::init()
 
     hack::ShouldAimAssistToggleKey = helper::getConfigValue("ToggleAimHack", cfg);
     keycodeAim = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldAimAssistToggleKey.c_str()));
-    cout << "Radar Toggle = " << hack::ShouldAimAssistToggleKey.c_str() << " Keycode: " << keycodeAim << endl;
+    cout << "Aim Toggle = " << hack::ShouldAimAssistToggleKey.c_str() << " Keycode: " << keycodeAim << endl;
+
+    hack::ShouldClickToggleKey = helper::getConfigValue("ToggleClickbot", cfg);
+    keycodeClick = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldClickToggleKey.c_str()));
+    cout << "Clickbot Toggle = " << hack::ShouldClickToggleKey.c_str() << " Keycode: " << keycodeClick << endl;
 
     double enemyRed = ::atof(helper::getConfigValue("enemyRed", cfg).c_str());
     double enemyGreen = ::atof(helper::getConfigValue("enemyGreen", cfg).c_str());
@@ -1227,6 +1269,8 @@ void hack::init()
 
     m_addressOfGlowPointer = csgo.GetCallAddress((void *)(call + 0x10));
 
+
+
     unsigned long foundLocalPlayerLea = (long)client.find(csgo,
                                                           "\x48\x89\xe5\x74\x0e\x48\x8d\x05\x00\x00\x00\x00", //27/06/16
                                                           "xxxxxxxx????");
@@ -1236,7 +1280,6 @@ void hack::init()
     unsigned long foundAttackMov = (long)client.find(csgo,
                                                      "\x44\x89\xe8\x83\xe0\x01\xf7\xd8\x83\xe8\x03\x45\x84\xe4\x74\x00\x21\xd0", //10/07/16
                                                      "xxxxxxxxxxxxxxx?xx");
-
     m_addressOfForceAttack = csgo.GetCallAddress((void *)(foundAttackMov + 20));
 
     unsigned long foundAlt1Mov = (long)client.find(csgo,
@@ -1250,6 +1293,7 @@ void hack::init()
     unsigned long foundVangMov = (long)engine.find(csgo,
                                                    "\x00\x00\x00\x00\x4a\x8b\x1c\x20\x48\x8b\x03\x48\x89\xdf\xff\x90\x00\x00\x00\x00\x41\x39\xc5", //Jul-12-17
                                                    "????xxxxxxxxxxxx????xxx");
+    m_iCrosshairID = csgo.GetCallAddress((void *)m_addressOfLocalPlayer+0xB2A4);
 
     basePointerOfViewAngle = csgo.GetCallAddress((void *)foundVangMov);
 
@@ -1258,12 +1302,12 @@ void hack::init()
                                                                  "xxxxxx????x");
 
     int serverDetailOffset = 0x294;
-    csgo.Read((void *)foundServerDetailOffsetMov + 21, &serverDetailOffset, sizeof(int));
+    csgo.Read((void *)foundServerDetailOffsetMov + 0x15, &serverDetailOffset, sizeof(int));
     //csgo.Read((void*)serverDetailOffsetAddress,&serverDetailOffset,sizeof(int));
 
     unsigned long foundServerDetailBaseMove = (long)engine.find(csgo, "\x90\x0f\x1f\x84\x00\x00\x00\x00\x00\x55\x48\x89\xe5\x48\x83\xec\x00\x48\x8b\x05", "xxxx????xxxxxxxx?xxx");
 
-    unsigned long serverDetailBase = csgo.GetCallAddress((void *)foundServerDetailBaseMove + 20);
+    unsigned long serverDetailBase = csgo.GetCallAddress((void *)foundServerDetailBaseMove + 0x14);
 
     csgo.Read((void *)serverDetailBase, &addressServerDetail, sizeof(long));
 
@@ -1272,9 +1316,9 @@ void hack::init()
     unsigned long foundIsConnectedMov = (long)engine.find(csgo,
                                                           "\x48\x8b\x05\x00\x00\x00\x00\xC6\x05\x00\x00\x00\x00\x00\x48\x8b\x10",
                                                           "xxx????x????xxxx");
-    addressIsConnected = (csgo.GetCallAddress((void *)foundIsConnectedMov + 9) + 1);
+    addressIsConnected = (csgo.GetCallAddress((void *)foundIsConnectedMov + 0x9) + 0x1);
 
-    unsigned long foundflashMaxAlphaOffset = (long)client.find(csgo, "\x5d\xc3\x66\x2e\x00\x00\x00\x00\x00\x00\x00\x00\xf3\x0f\x10\x87\x00\x00\x00\x00", "xxxx????xxxxxxxx????") + 16;
+    unsigned long foundflashMaxAlphaOffset = (long)client.find(csgo, "\x5d\xc3\x66\x2e\x00\x00\x00\x00\x00\x00\x00\x00\xf3\x0f\x10\x87\x00\x00\x00\x00", "xxxx????xxxxxxxx????") + 0x10;
     if (foundflashMaxAlphaOffset != 0)
     {
         csgo.Read((void *)foundflashMaxAlphaOffset, &offsets::m_fFlashMaxAlpha, sizeof(int));
@@ -1353,6 +1397,8 @@ void hack::init()
     hack::flashMax = ::atof(helper::getConfigValue("flash_max", cfg).c_str());
     hack::viewFov = ::atof(helper::getConfigValue("custom_fov", cfg).c_str());
     hack::percentSmoothing = ::atof(helper::getConfigValue("aim_smooth", cfg).c_str());
+    hack::willsalt = ::atof(helper::getConfigValue("aim_salting", cfg).c_str());
+    hack::errormargin = ::atof(helper::getConfigValue("aim_errormargin", cfg).c_str());
     hack::noHands = ::atof(helper::getConfigValue("no_hands", cfg).c_str());
     hack::shootFriends = ::atof(helper::getConfigValue("shoot_friends", cfg).c_str());
     hack::legitGlow = ::atof(helper::getConfigValue("legit_glow", cfg).c_str());

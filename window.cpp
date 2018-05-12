@@ -2,7 +2,7 @@
 
 int i = 0;
 qWindow::qWindow(QWidget *parent) : QWidget(parent)
-{ 
+{
     QSize size = qApp->screens()[0]->size();
     settings::window::wind_height = size.height();
     settings::window::wind_width = size.width();
@@ -42,7 +42,7 @@ void qWindow::paintEvent(QPaintEvent *)
     {
         i = 0;
     }*/
-    painter.drawText(settings::window::wind_width * .2, 15, "JWAim");
+    painter.drawText(settings::window::wind_width * .2, 15, "csgo-external");
 
     font.setPointSize(6);
     painter.setFont(font);
@@ -78,6 +78,11 @@ void qWindow::paintEvent(QPaintEvent *)
     pen.setColor(h.ShouldRCS ? greenTrue : redFalse);
     painter.setPen(pen);
     painter.drawText(settings::window::wind_width * .2, 95, (h.ShouldRCSToggleKey + " RCS: " + helper::AtomicBoolToString(&h.ShouldRCS)).c_str());
+
+    pen.setColor(h.ShouldClick ? greenTrue : redFalse);
+    painter.setPen(pen);
+    painter.drawText(settings::window::wind_width * .2, 115, (h.ShouldClickToggleKey + " Click: " + helper::AtomicBoolToString(&h.ShouldClick)).c_str());
+
     if (h.IsConnected())
     {
         static int waitForABit_it = -1;
@@ -90,7 +95,7 @@ void qWindow::paintEvent(QPaintEvent *)
             }
             else if (waitForABit_it < settings::misc::hitmarker_time && waitForABit_it != -1)
             {
-                qWindow::drawHitmarker(settings::misc::hitmarker_width, painter, pen);                
+                qWindow::drawHitmarker(settings::misc::hitmarker_width, painter, pen);
                 waitForABit_it++;
             }
             else
@@ -137,7 +142,7 @@ void qWindow::paintEvent(QPaintEvent *)
             font.setPointSize(10);
             font.setBold(true);
             painter.setFont(font);
-            painter.drawText(50, settings::window::wind_height / 2.7, " Spectators: ");            
+            painter.drawText(50, settings::window::wind_height / 2.7, " Spectators: ");
         }
         else
         {
@@ -147,7 +152,7 @@ void qWindow::paintEvent(QPaintEvent *)
             font.setBold(true);
             painter.setFont(font);
             painter.drawText(50, settings::window::wind_height / 2.7, " Spectators: ");
-            
+
             font.setPointSize(9);
             painter.setPen(pen);
             painter.setFont(font);
@@ -156,6 +161,7 @@ void qWindow::paintEvent(QPaintEvent *)
                 painter.drawText(60, settings::window::wind_height / 2.7 + 15 * (i + 1), spectators[i].c_str());
             }
         }
+	usleep(30000);
     }
 }
 void qWindow::callback()
@@ -222,10 +228,10 @@ void qWindow::drawESPBoxes(std::array<EntityToScreen, 64> &entitiesToScreen, QPa
                 }
                 painter.drawLine(entitiesToScreen[i].origin.x, entitiesToScreen[i].origin.y, settings::window::wind_width * settings::window::cofLineTetherX, settings::window::wind_height * settings::window::cofLineTetherY);
 
-                //helper::clampAngle(&entitiesToScreen[i].entityInfo.entity.m_angNetworkAngles);
-                //if(fabsf(entitiesToScreen[i].lby-entitiesToScreen[i].entityInfo.entity.m_angNetworkAngles.y)>35){
-                //painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.45,1000,1000,0,"Anti-Aim");
-                //}
+                helper::clampAngle(&entitiesToScreen[i].entityInfo.entity.m_angNetworkAngles);
+                if(fabsf(entitiesToScreen[i].lby-entitiesToScreen[i].entityInfo.entity.m_angNetworkAngles.y)>35){
+                painter.drawText(entitiesToScreen[i].origin.x-(fwidth/2),entitiesToScreen[i].head.y-fheight*.45,1000,1000,0,"Anti-Aim");
+                }
             }
             int j = 0;
             for (auto str : stringsToDraw)
