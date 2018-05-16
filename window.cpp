@@ -183,7 +183,7 @@ void qWindow::callback()
         QTimer::singleShot(16, this, &qWindow::callback);
     }else {
         hide();
-        QTimer::singleShot(1000, this, &qWindow::callback);
+        QTimer::singleShot(100, this, &qWindow::callback);
     }
 }
 void qWindow::drawESPBoxes(std::array<EntityToScreen, 64> &entitiesToScreen, QPainter &painter, QPen &pen, QFont &font)
