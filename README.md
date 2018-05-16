@@ -1,24 +1,22 @@
-# jwaim - csgo multi-cheat for linux
+# jwaim - CS:GO multi-cheat for Linux
 ![Alt text](https://i.imgur.com/xmjycBr.jpg "another screenshot")
-This is a cheat for the 64 bit linux csgo. It utilizes QT graphics library to draw helpful info on screen.
-# community
-join the discord for setup help and other questions
 
+This is a cheat for the 64 bit Linux CS:GO. Utilizing system calls and clever algorithms it assists you to increase your accuracy and skill. It also uses QT graphics library to draw helpful information on your screen.
+# community
+##### join the discord for setup help and other questions
 https://discord.gg/59dJJYN
 # prerequisites
-1. x11 display server
+##### 1. X11 display server
 
-2. compositing window manager 
-
- environments like GNOME and Unity have this included OR you can install a standalone window manager such as xcompmgr (as suggested by [Teklad](https://github.com/Teklad))
+##### 2. compositing window manager 
+environments like GNOME and Unity have this included OR you can install a standalone window manager such as xcompmgr (as suggested by [Teklad](https://github.com/Teklad))
 # installing and running
-1. clone the repo
+##### 1. Clone the repo
 ```bash
 git clone https://github.com/bluuman/jwaim/
 ```
-2. install dependencies
-
-  Debian:
+##### 2. Install dependencies
+Debian:
 ```bash
 sudo apt-get install libboost-all-dev libx11-dev libx11-dev:i386 libxtst-dev libconfig++-dev build-essential qt5-default
 ```
@@ -27,28 +25,28 @@ sudo apt-get install libboost-all-dev libx11-dev libx11-dev:i386 libxtst-dev lib
 sudo pacman -S boost-libs libx11 libxtst libconfig base-devel qt5
 ```
 
-3. navigate to the base directory (usually ~/jwaim).
+##### 3. Navigate to the base directory (usually ~/jwaim).
 ```bash
 cd jwaim
 ```
 
-4. setup makefile with qmake
+##### 4. Set up makefile with qmake
 ```bash
 qmake ./jwaim.pro
 ```
 
-5. compile program
+##### 5. Compile program
 ```bash
 make
 ```
-6. rename settings_example.cfg to settings.cfg and modify settings to your liking.
+##### 6. Rename settings_example.cfg to settings.cfg and modify settings to your liking.
 
-7. run jwaim as superuser
+##### 7. Run jwaim as superuser
 
 ```bash 
 sudo ./jwaim
 ```
-8. setup required keybinds (developer console: ~)
+##### 8. Set up required keybinds (use developer console '~')
 ```
 bind mouse1 +alt2
 bind space +alt1
@@ -56,7 +54,7 @@ bind space +alt1
 
 
 NOTE:
-please make sure you have settings.cfg in the same directory as your current working directory when you run jwaim (step 6), otherwise you will experience problems with libconfig not being able to find settings.cfg.
+Please make sure you have settings.cfg in the same directory as your current working directory when you run jwaim (Step 6), otherwise libconfig will not be able to find settings.cfg.
 # Cheat Features
 **BHop  
 Aim Assist  
