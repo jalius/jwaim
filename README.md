@@ -9,7 +9,8 @@ https://discord.gg/59dJJYN
 1. x11 display server
 
 2. compositing window manager 
-environments like GNOME and Unity have this included OR you can install a standalone window manager such as xcompmgr (as suggested by [Teklad](https://github.com/Teklad))
+
+ environments like GNOME and Unity have this included OR you can install a standalone window manager such as xcompmgr (as suggested by [Teklad](https://github.com/Teklad))
 # installing and running
 1. clone the repo
 ```bash
