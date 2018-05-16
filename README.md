@@ -13,7 +13,7 @@ environments like GNOME and Unity have this included OR you can install a standa
 # installing and running
 ##### 1. Clone the repo
 ```bash
-git clone https://github.com/bluuman/jwaim/
+git clone https://github.com/bluuman/jwaim.git/
 ```
 ##### 2. Install dependencies
 Debian:
