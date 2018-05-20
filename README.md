@@ -18,11 +18,11 @@ git clone https://github.com/bluuman/jwaim.git/
 ##### 2. Install dependencies
 Debian:
 ```bash
-sudo apt-get install libboost-all-dev libx11-dev libx11-dev:i386 libxtst-dev libconfig++-dev build-essential qt5-default
+sudo apt-get install libboost-all-dev libx11-dev libx11-dev:i386 libxtst-dev libconfig++-dev build-essential qt5-default libqt5x11extras5-dev
 ```
   Arch (thanks eclip):
 ```bash
-sudo pacman -S boost-libs libx11 libxtst libconfig base-devel qt5
+sudo pacman -S boost-libs libx11 libxtst libconfig base-devel qt5 qt5-x11extras
 ```
 
 ##### 3. Navigate to the base directory (usually ~/jwaim).
