@@ -7,7 +7,8 @@ SOURCES += \
     window.cpp \
     hack.cpp \
     remote.cpp \
-    helper.cpp
+    helper.cpp \
+    monitor.cpp
 
 HEADERS += \
     window.h \
@@ -16,7 +17,8 @@ HEADERS += \
     types.h \
     offsets.h \
     helper.h \
-    settings.h
+    settings.h \
+    monitor.h
 
 INCLUDEPATH += /usr/include/boost
 
