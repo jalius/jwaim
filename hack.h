@@ -155,8 +155,9 @@ public:
     bool noHands;
     bool resolver;
     bool shootFriends;
-    int  glowStyle;
     bool glowBloom;
+    bool glowItems;
+    int  glowStyle;
     bool drawrcsCrosshair;
     bool staticCrosshair;
     bool drawHitmarker;

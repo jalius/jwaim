@@ -883,6 +883,10 @@ bool hack::glow()
                     g_glow[i].m_bRenderWhenUnoccluded = 0;
                     continue;
                 }
+
+                if (!glowItems && ent.m_iHealth < 1)
+                    continue;
+
                 if (ShouldRadarHack)
                 {
                     csgo.Write((void *)((unsigned long)g_glow[i].m_pEntity + offsets::m_bIsSpotted), &spotted, sizeof(unsigned char));
@@ -1335,6 +1339,7 @@ void hack::init()
     hack::shootFriends = ::atof(helper::getConfigValue("shoot_friends", cfg).c_str());
     hack::glowStyle = ::atof(helper::getConfigValue("glow_style", cfg).c_str());
     hack::glowBloom = ::atof(helper::getConfigValue("glow_bloom", cfg).c_str());
+    hack::glowItems = ::atof(helper::getConfigValue("glow_items", cfg).c_str());
     hack::drawrcsCrosshair = ::atof(helper::getConfigValue("rcs_crosshair", cfg).c_str());
     hack::staticCrosshair = ::atof(helper::getConfigValue("static_crosshair", cfg).c_str());
     hack::aimbotMaxBullets = ::atof(helper::getConfigValue("max_aimbot_bullets", cfg).c_str());
