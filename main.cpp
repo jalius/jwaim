@@ -98,7 +98,9 @@ int execQApp(){
 int main()
 {
     XInitThreads();
-    h.init();
+    if (!h.init()) {
+        return -1;
+    }
     std::thread g(glowLoop);
     std::thread a(aimLoop);
     std::thread mq(multiQuickLoop);

@@ -1066,15 +1066,25 @@ int hack::getActiveWeaponEntityID(unsigned long entityPtr)
     }
     return ActiveWeapon;
 }
-void hack::init()
+bool hack::init()
 {
     if (getuid() != 0)
     {
-        cout << "Cannot start as NON ROOT user.";
-        return;
+        cout << "Cannot start as NON ROOT user.\n";
+        return false;
     }
     hack::display = XOpenDisplay(0);
-    //XInitThreads();
+
+    // Detect if a composite manager is running.
+    // Since some features won't work without it just close out.
+    char prop_name[20];
+    snprintf(prop_name, 20, "_NET_WM_CM_S%d", XDefaultScreen(hack::display));
+    Atom prop_atom = XInternAtom(hack::display, prop_name, False);
+    if (XGetSelectionOwner(hack::display, prop_atom) == None) {
+        std::cout << "Cannot start without composite manager running.\n";
+        return false;
+    }
+
     //read our cfg file
     try
     {
@@ -1178,7 +1188,7 @@ void hack::init()
         if (!csgo.IsRunning())
         {
             cout << "The game was closed before I could find the client and engine libraries inside of csgo";
-            return;
+            return false;
         }
 
         csgo.ParseMaps();
@@ -1387,4 +1397,5 @@ void hack::init()
     preferredBones.push_back(7);
     preferredBones.push_back(8);
     preferredBones.push_back(0);
+    return true;
 }
