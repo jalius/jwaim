@@ -110,7 +110,7 @@ class hack {
 	};
 
 public:
-    void init();
+    bool init();
     bool checkKeys();
     void bhop();
     void noFlash();
