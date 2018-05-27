@@ -4,7 +4,7 @@
 
 namespace remote {
 	// Map Module
-	void* MapModuleMemoryRegion::find(Handle handle, const char* data, const char* pattern) {
+	uintptr_t MapModuleMemoryRegion::find(Handle handle, const char* data, const char* pattern) {
 		char buffer[FINDPATTERN_CHUNKSIZE];
 
 		size_t len = strlen(pattern);
@@ -14,30 +14,19 @@ namespace remote {
 
 		while (totalsize) {
 			size_t readsize = (totalsize < chunksize) ? totalsize : chunksize;
-			size_t readaddr = this->start + (chunksize * chunknum);
+			uintptr_t readaddr = this->start + (chunksize * chunknum);
 
 			bzero(buffer, chunksize);
 
 			if (handle.Read((void*) readaddr, buffer, readsize)) {
-				for (size_t b = 0; b < readsize; b++) {
+				for (uintptr_t b = 0; b < readsize; b++) {
 					size_t matches = 0;
 
 					while (buffer[b + matches] == data[matches] || pattern[matches] != 'x') {
 						matches++;
 
 						if (matches == len) {
-							/*
-							printf("Debug Output:\n");
-							for (int i = 0; i < readsize-b; i++)
-							{
-								if (i != 0 && i % 8 == 0) {
-									printf("\n");
-								}
-								printf("%02x ",(unsigned char)buffer[b+i]);
-							}
-							printf("\n");
-							*/
-							return (char*) (readaddr + b);
+							return (readaddr + b);
 						}
 					}
 				}
@@ -114,10 +103,10 @@ namespace remote {
 		return (process_vm_readv(pid, local, 1, remote, 1, 0) == size);
 	}
 
-	unsigned long Handle::GetCallAddress(void* address) {
-		int code = 0;
-		if (Read((char*) address, &code, sizeof(unsigned int))) {
-			return (unsigned long)code + (unsigned long) address + 4;
+	uintptr_t Handle::GetCallAddress(uintptr_t address) {
+		uintptr_t code = 0;
+		if (Read(reinterpret_cast<char*>(address), &code, sizeof(unsigned int))) {
+			return code + address + 4;
 		}
 
 		return 0;
