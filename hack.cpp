@@ -42,22 +42,14 @@ double* hack::Colors()
 
 void hack::readEntities(std::array<EntityInfo, 64>& rentities)
 {
-    // get shared access
-    boost::shared_lock<boost::shared_mutex> lock(entities_access);
-    // cout<<"read ent list"<<endl;
+    std::lock_guard<std::mutex> l(entities_access);
     rentities = entities;
 }
 
 void hack::writeEntities(std::array<EntityInfo, 64>& wentities)
 {
-    // get upgradable access
-    boost::upgrade_lock<boost::shared_mutex> lock(entities_access);
-
-    // get exclusive access
-    boost::upgrade_to_unique_lock<boost::shared_mutex> uniqueLock(lock);
-
+    std::lock_guard<std::mutex> l(entities_access);
     entities = wentities;
-    // cout<<"wrote ent list"<<endl;
 }
 
 std::array<unsigned long, 64> hack::readAllPlayerNamePtrs(unsigned long playerresources_adr)
@@ -391,7 +383,9 @@ void hack::aim()
         idclosestEnt == 0) { // if the enemy we were aiming at is not alive or is the world...
         acquiring = false;   // stop acquiring the target
         foundTarget = false; // no target found
+        csgo.Read((void*) (localPlayer+0xBBB8), &idclosestEnt, sizeof(idclosestEnt));
     }
+
 
     punchDelta.x = punch.x - oldPunch.x;
     punchDelta.y = punch.y - oldPunch.y;

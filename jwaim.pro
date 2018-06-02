@@ -25,8 +25,6 @@ LIBS += \
     -lconfig++ \
     -lXtst \
     -lpthread \
-    -lboost_system \
-    -lboost_thread
 
 DISTFILES += \
     settings.cfg

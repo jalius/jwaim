@@ -19,8 +19,6 @@
 #include <mutex>
 #include <math.h>
 #include <memory.h>
-#include <boost/thread/locks.hpp>
-#include <boost/thread/shared_mutex.hpp>
 
 #include "offsets.h"
 #include "remote.h"
@@ -183,7 +181,7 @@ private:
     void readEntities(std::array<EntityInfo,64> &rentities);
     void writeEntities(std::array<EntityInfo,64> &wentities);
 
-    boost::shared_mutex entities_access;
+    std::mutex entities_access;
     std::array<EntityInfo,64> entities;
 
     std::array<std::pair<Vector,Vector>,64> screenPositions;
