@@ -28,7 +28,6 @@
 
 
 using namespace std;
-using namespace libconfig;
 
 #define TEAM_SPECTATOR          1
 
@@ -122,9 +121,6 @@ public:
     void setupIsConnected();
     bool IsConnected();
     bool totalHitsIncreased();
-    double *Colors();
-    //settings
-    Config cfg;
     //togglable settings
 
     std::atomic<bool> ShouldGlow;
@@ -195,7 +191,6 @@ private:
     remote::MapModuleMemoryRegion client;
     remote::MapModuleMemoryRegion engine;
 
-    double* colors;
     int keycodeBhop;
     int keycodeGlow;
     int keycodeNoFlash;

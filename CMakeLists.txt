@@ -16,6 +16,7 @@ add_executable(jwaim
     helper.cpp
     main.cpp
     remote.cpp
+    jwsettings.cpp
     window.cpp
 )
 

@@ -1,5 +1,7 @@
 #include "hack.h"
-Config cfg;
+
+#include "jwsettings.h"
+
 unsigned int offsets::m_pStudioBones = 0x2C70;         // unsigned long long m_pStudioBones;
 unsigned int offsets::m_flLowerBodyYawTarget = 0x42A8; // float m_flLowerBodyYawTarget; // 0x42C8
 unsigned int offsets::dwViewMatrix = 0x2537374;        // 4x4 float matrix //2537334 and 2553C14 on Aug-7-17
@@ -33,11 +35,6 @@ static int toggleOff = 4;
 bool hack::IsConnected()
 {
     return isConnected;
-}
-
-double* hack::Colors()
-{
-    return colors;
 }
 
 void hack::readEntities(std::array<EntityInfo, 64>& rentities)
@@ -757,6 +754,7 @@ bool hack::glow()
     struct iovec g_remote[1024], g_local[1024];
     struct hack::GlowObjectDefinition_t g_glow[1024];
     std::array<EntityInfo, 64> entitiesLocal;
+    auto colors = JWSettings::getInstance().Colors();
 
     // Reset
     bzero(g_remote, sizeof(g_remote));
@@ -987,104 +985,44 @@ bool hack::init()
         return false;
     }
 
-    // read our cfg file
-    try {
-        cfg.readFile("settings.cfg");
-    } catch (const FileIOException& fioex) {
-        cout << "I/O error while reading settings.cfg.";
-    } catch (const ParseException& pex) {
-        stringstream ss;
-        ss << "Parse error at " << pex.getFile() << ":" << pex.getLine() << " - " << pex.getError();
-        cout << ss.str() << endl;
-    }
+    JWSettings& s = JWSettings::getInstance();
+
+    auto printKeyInfo = [](const std::string& cmd, const std::string& key, int keycode) {
+        std::cout << cmd << " Toggle = " << key << " Keycode: " << keycode << '\n';
+    };
     // configure our custom settings from settings.cfg
-    hack::ShouldGlowToggleKey = helper::getConfigValue("ToggleGlow", cfg);
-    keycodeGlow = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldGlowToggleKey.c_str()));
-    cout << "Glow Toggle = " << hack::ShouldGlowToggleKey.c_str() << " Keycode: " << keycodeGlow << endl;
+    hack::ShouldGlowToggleKey = s.KeyMap.Glow();
+    keycodeGlow = s.toKeycode(hack::ShouldGlowToggleKey);
+    printKeyInfo("Glow", hack::ShouldGlowToggleKey, keycodeGlow);
 
-    hack::ShouldESPToggleKey = helper::getConfigValue("ToggleESP", cfg);
-    keycodeESP = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldESPToggleKey.c_str()));
-    cout << "ESP Toggle = " << hack::ShouldESPToggleKey.c_str() << " Keycode: " << keycodeESP << endl;
+    hack::ShouldESPToggleKey = s.KeyMap.ESP();
+    keycodeESP = s.toKeycode(hack::ShouldESPToggleKey);
+    printKeyInfo("ESP", hack::ShouldESPToggleKey, keycodeESP);
 
-    hack::ShouldBhopToggleKey = helper::getConfigValue("ToggleBhop", cfg);
-    keycodeBhop = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldBhopToggleKey.c_str()));
-    cout << "Bhop Toggle = " << hack::ShouldBhopToggleKey.c_str() << " Keycode: " << keycodeBhop << endl;
+    hack::ShouldBhopToggleKey = s.KeyMap.Bhop();
+    keycodeBhop = s.toKeycode(hack::ShouldBhopToggleKey);
+    printKeyInfo("Bhop", hack::ShouldBhopToggleKey, keycodeBhop);
 
-    hack::ShouldNoFlashToggleKey = helper::getConfigValue("ToggleNoFlash", cfg);
-    keycodeNoFlash = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldNoFlashToggleKey.c_str()));
-    cout << "NoFlash Toggle = " << hack::ShouldNoFlashToggleKey.c_str() << " Keycode: " << keycodeNoFlash << endl;
+    hack::ShouldNoFlashToggleKey = s.KeyMap.NoFlash();
+    keycodeNoFlash = s.toKeycode(hack::ShouldNoFlashToggleKey);
+    printKeyInfo("NoFlash", hack::ShouldNoFlashToggleKey, keycodeNoFlash);
 
-    hack::ShouldRCSToggleKey = helper::getConfigValue("ToggleRCS", cfg);
-    keycodeRCS = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldRCSToggleKey.c_str()));
-    cout << "RCS Toggle = " << hack::ShouldRCSToggleKey.c_str() << " Keycode: " << keycodeRCS << endl;
+    hack::ShouldRCSToggleKey = s.KeyMap.RCS();
+    keycodeRCS = s.toKeycode(hack::ShouldRCSToggleKey);
+    printKeyInfo("RCS", hack::ShouldRCSToggleKey, keycodeRCS);
 
-    hack::ShouldRageToggleKey = helper::getConfigValue("ToggleRage", cfg);
-    keycodeRage = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldRageToggleKey.c_str()));
-    cout << "Rage Toggle = " << hack::ShouldRageToggleKey.c_str() << " Keycode: " << keycodeRage << endl;
+    hack::ShouldRageToggleKey = s.KeyMap.Rage();
+    keycodeRage = s.toKeycode(hack::ShouldRageToggleKey);
+    printKeyInfo("Rage", hack::ShouldRageToggleKey, keycodeRage);
 
-    hack::ShouldRadarHackToggleKey = helper::getConfigValue("ToggleRadarHack", cfg);
-    keycodeRadarHack = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldRadarHackToggleKey.c_str()));
-    cout << "Radar Toggle = " << hack::ShouldRadarHackToggleKey.c_str() << " Keycode: " << keycodeRadarHack << endl;
+    hack::ShouldRadarHackToggleKey = s.KeyMap.Radar();
+    keycodeRadarHack = s.toKeycode(hack::ShouldRadarHackToggleKey);
+    printKeyInfo("Radar", hack::ShouldRadarHackToggleKey, keycodeRadarHack);
 
-    hack::ShouldAimAssistToggleKey = helper::getConfigValue("ToggleAimHack", cfg);
-    keycodeAim = XKeysymToKeycode(hack::display, XStringToKeysym(hack::ShouldAimAssistToggleKey.c_str()));
-    cout << "Radar Toggle = " << hack::ShouldAimAssistToggleKey.c_str() << " Keycode: " << keycodeAim << endl;
-
-    double enemyRed = ::atof(helper::getConfigValue("enemyRed", cfg).c_str());
-    double enemyGreen = ::atof(helper::getConfigValue("enemyGreen", cfg).c_str());
-    double enemyBlue = ::atof(helper::getConfigValue("enemyBlue", cfg).c_str());
-    double enemyAlpha = ::atof(helper::getConfigValue("enemyAlpha", cfg).c_str());
-
-    double enemyInCrosshairRed = ::atof(helper::getConfigValue("enemyInCrosshairRed", cfg).c_str());
-    double enemyInCrosshairGreen = ::atof(helper::getConfigValue("enemyInCrosshairGreen", cfg).c_str());
-    double enemyInCrosshairBlue = ::atof(helper::getConfigValue("enemyInCrosshairBlue", cfg).c_str());
-    double enemyInCrosshairAlpha = ::atof(helper::getConfigValue("enemyInCrosshairAlpha", cfg).c_str());
-
-    double allyRed = ::atof(helper::getConfigValue("allyRed", cfg).c_str());
-    double allyGreen = ::atof(helper::getConfigValue("allyGreen", cfg).c_str());
-    double allyBlue = ::atof(helper::getConfigValue("allyBlue", cfg).c_str());
-    double allyAlpha = ::atof(helper::getConfigValue("allyAlpha", cfg).c_str());
-
-    double enemyRed_esp = ::atof(helper::getConfigValue("enemyRed_esp", cfg).c_str());
-    double enemyGreen_esp = ::atof(helper::getConfigValue("enemyGreen_esp", cfg).c_str());
-    double enemyBlue_esp = ::atof(helper::getConfigValue("enemyBlue_esp", cfg).c_str());
-    double enemyAlpha_esp = ::atof(helper::getConfigValue("enemyAlpha_esp", cfg).c_str());
-
-    double allyRed_esp = ::atof(helper::getConfigValue("allyRed_esp", cfg).c_str());
-    double allyGreen_esp = ::atof(helper::getConfigValue("allyGreen_esp", cfg).c_str());
-    double allyBlue_esp = ::atof(helper::getConfigValue("allyBlue_esp", cfg).c_str());
-    double allyAlpha_esp = ::atof(helper::getConfigValue("allyAlpha_esp", cfg).c_str());
-
-    double secondaryRed_esp = ::atof(helper::getConfigValue("secondaryRed_esp", cfg).c_str());
-    double secondaryGreen_esp = ::atof(helper::getConfigValue("secondaryGreen_esp", cfg).c_str());
-    double secondaryBlue_esp = ::atof(helper::getConfigValue("secondaryBlue_esp", cfg).c_str());
-    double secondaryAlpha_esp = ::atof(helper::getConfigValue("secondaryAlpha_esp", cfg).c_str());
-
-    colors = new double[24]{enemyRed,
-        enemyGreen,
-        enemyBlue,
-        enemyAlpha,
-        enemyInCrosshairRed,
-        enemyInCrosshairGreen,
-        enemyInCrosshairBlue,
-        enemyInCrosshairAlpha,
-        allyRed,
-        allyGreen,
-        allyBlue,
-        allyAlpha,
-        enemyRed_esp,
-        enemyGreen_esp,
-        enemyBlue_esp,
-        enemyAlpha_esp,
-        allyRed_esp,
-        allyGreen_esp,
-        allyBlue_esp,
-        allyAlpha_esp,
-        secondaryRed_esp,
-        secondaryGreen_esp,
-        secondaryBlue_esp,
-        secondaryAlpha_esp};
-
+    hack::ShouldAimAssistToggleKey = s.KeyMap.Aim();
+    keycodeAim = s.toKeycode(hack::ShouldAimAssistToggleKey);
+    printKeyInfo("Aim", hack::ShouldAimAssistToggleKey, keycodeAim);
+    
     while (true) {
         if (remote::FindProcessByName("csgo_linux64", &csgo))
             break;
@@ -1237,26 +1175,26 @@ bool hack::init()
         client.find(csgo, "\x48\x8B\x05\x00\x00\x00\x00\x55\x48\x89\xE5\x48\x85\xC0\x74\x10\x48", "xxx????xxxxxxxxxx") +
         3;
     playerresources_ptr = csgo.GetCallAddress(found_playerresources);
-    cout << std::hex << "offsets::m_fFlashMaxAlpha pointer address " << foundflashMaxAlphaOffset << endl;
-    cout << "client.start: " << std::hex << client.start << endl;
-    cout << "engine.start: " << engine.start << endl;
-    cout << "GlowPointer address: " << m_addressOfGlowPointer << endl;
-    cout << "LocalPlayer pointer address: " << m_addressOfLocalPlayer << endl;
-    cout << "View angle base pointer address: " << basePointerOfViewAngle << endl;
-    cout << "server detail offset: " << serverDetailOffset << endl;
-    cout << "addressServerDetail: " << addressServerDetail << endl;
-    cout << "jump address: " << m_addressOfJump << endl;
-    cout << "ForceAttack address: " << m_addressOfForceAttack << endl;
-    cout << "Alt1 address: " << m_addressOfAlt1 << endl;
-    cout << "Alt2 address: " << m_addressOfAlt2 << endl;
-    cout << "addressIsConnected: " << addressIsConnected << endl;
-    cout << "offsets::m_bIsScoped: " << offsets::m_bIsScoped << endl;
-    cout << "offsets::m_fFlashMaxAlpha: " << offsets::m_fFlashMaxAlpha << endl;
-    cout << "offsets::m_bIsDefusing: " << offsets::m_bIsDefusing << endl;
-    cout << "offsets::m_hObserverTarget: " << offsets::m_hObserverTarget << endl;
-    cout << "offsets::m_iObserveCamType: " << offsets::m_iObserveCamType << endl;
-    cout << "offsets::m_pStudioBones: " << offsets::m_pStudioBones << endl;
-    cout << "offsets::m_iFOV: " << offsets::m_iFOV << endl;
+    std::cout << std::hex << "offsets::m_fFlashMaxAlpha pointer address " << foundflashMaxAlphaOffset << endl;
+    std::cout << "client.start: " << std::hex << client.start << endl;
+    std::cout << "engine.start: " << engine.start << endl;
+    std::cout << "GlowPointer address: " << m_addressOfGlowPointer << endl;
+    std::cout << "LocalPlayer pointer address: " << m_addressOfLocalPlayer << endl;
+    std::cout << "View angle base pointer address: " << basePointerOfViewAngle << endl;
+    std::cout << "server detail offset: " << serverDetailOffset << endl;
+    std::cout << "addressServerDetail: " << addressServerDetail << endl;
+    std::cout << "jump address: " << m_addressOfJump << endl;
+    std::cout << "ForceAttack address: " << m_addressOfForceAttack << endl;
+    std::cout << "Alt1 address: " << m_addressOfAlt1 << endl;
+    std::cout << "Alt2 address: " << m_addressOfAlt2 << endl;
+    std::cout << "addressIsConnected: " << addressIsConnected << endl;
+    std::cout << "offsets::m_bIsScoped: " << offsets::m_bIsScoped << endl;
+    std::cout << "offsets::m_fFlashMaxAlpha: " << offsets::m_fFlashMaxAlpha << endl;
+    std::cout << "offsets::m_bIsDefusing: " << offsets::m_bIsDefusing << endl;
+    std::cout << "offsets::m_hObserverTarget: " << offsets::m_hObserverTarget << endl;
+    std::cout << "offsets::m_iObserveCamType: " << offsets::m_iObserveCamType << endl;
+    std::cout << "offsets::m_pStudioBones: " << offsets::m_pStudioBones << endl;
+    std::cout << "offsets::m_iFOV: " << offsets::m_iFOV << endl;
     // settings defaults
     ShouldGlow = false;
     ShouldRadarHack = false;
@@ -1266,25 +1204,25 @@ bool hack::init()
     ShouldRage = false;
     ShouldRCS = false;
     ShouldAimAssist = true;
-    preferredBone = ::atof(helper::getConfigValue("bone", cfg).c_str());
-    hack::fov = ::atof(helper::getConfigValue("fov", cfg).c_str());
-    hack::flashMax = ::atof(helper::getConfigValue("flash_max", cfg).c_str());
-    hack::viewFov = ::atof(helper::getConfigValue("custom_fov", cfg).c_str());
-    hack::percentSmoothing = ::atof(helper::getConfigValue("aim_smooth", cfg).c_str());
-    hack::noHands = ::atof(helper::getConfigValue("no_hands", cfg).c_str());
-    hack::shootFriends = ::atof(helper::getConfigValue("shoot_friends", cfg).c_str());
-    hack::glowStyle = ::atof(helper::getConfigValue("glow_style", cfg).c_str());
-    hack::glowBloom = ::atof(helper::getConfigValue("glow_bloom", cfg).c_str());
-    hack::glowItems = ::atof(helper::getConfigValue("glow_items", cfg).c_str());
-    hack::drawrcsCrosshair = ::atof(helper::getConfigValue("rcs_crosshair", cfg).c_str());
-    hack::staticCrosshair = ::atof(helper::getConfigValue("static_crosshair", cfg).c_str());
-    hack::aimbotMaxBullets = ::atof(helper::getConfigValue("max_aimbot_bullets", cfg).c_str());
-    hack::drawHitmarker = ::atof(helper::getConfigValue("hitmarker", cfg).c_str());
-    hack::useDistanceBasedFOV = ::atof(helper::getConfigValue("distance_based_fov", cfg).c_str());
-    settings::misc::hitmarker_time = ::atof(helper::getConfigValue("hitmarker_time", cfg).c_str());
-    settings::misc::hitmarker_width = ::atof(helper::getConfigValue("hitmarker_width", cfg).c_str());
-    settings::misc::hitmarker_length = ::atof(helper::getConfigValue("hitmarker_length", cfg).c_str());
-    drawESP = ::atof(helper::getConfigValue("draw_overlay", cfg).c_str());
+    preferredBone = s.AimBot.Bone();
+    hack::fov = s.AimBot.FOV();
+    hack::percentSmoothing = s.AimBot.Smoothing();
+    hack::shootFriends = s.AimBot.FriendlyFire();
+    hack::aimbotMaxBullets = s.AimBot.MaxBullets();
+    hack::useDistanceBasedFOV = s.AimBot.DistBasedFOV();
+    hack::viewFov = s.Visual.FOV();
+    hack::noHands = s.Visual.HideHands();
+    hack::drawrcsCrosshair = s.Visual.CrosshairRCS();
+    hack::staticCrosshair = s.Visual.CrosshairStatic();
+    drawESP = s.Visual.DrawOverlay();
+    hack::flashMax = s.Visual.FlashMax();
+    hack::drawHitmarker = s.HitMarker.Enabled();
+    settings::misc::hitmarker_time = s.HitMarker.Time();
+    settings::misc::hitmarker_width = s.HitMarker.Width();
+    settings::misc::hitmarker_length = s.HitMarker.Length();
+    hack::glowStyle = s.Glow.Style();
+    hack::glowBloom = s.Glow.Bloom();
+    hack::glowItems = s.Glow.Items();
     // check setting boundries
     if (flashMax < 0 || flashMax > 100) {
         flashMax = 100;
@@ -1304,10 +1242,7 @@ bool hack::init()
     // scale settings
     flashMax *= 2.55;
     cout << "flashMax: " << std::dec << flashMax << "/" << 255 << endl;
-    colors[20] *= 255;
-    colors[21] *= 255;
-    colors[22] *= 255;
-    colors[23] *= 255;
+    
     /* initialize random seed: */
     srand(time(NULL));
     iWeaponID_lp = -1;
