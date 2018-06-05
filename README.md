@@ -18,37 +18,34 @@ git clone https://github.com/Teklad/jwaim.git
 ##### 2. Install dependencies
 Debian:
 ```bash
-sudo apt-get install libx11-dev libx11-dev:i386 libxtst-dev libconfig++-dev build-essential qt5-default libqt5x11extras5-dev
+sudo apt-get install cmake libx11-dev libx11-dev:i386 libxtst-dev libconfig++-dev build-essential qt5-default libqt5x11extras5-dev
 ```
   Arch (thanks eclip):
 ```bash
-sudo pacman -S libx11 libxtst libconfig base-devel qt5 qt5-x11extras
+sudo pacman -S cmake libx11 libxtst libconfig base-devel qt5 qt5-x11extras
 ```
 
-##### 3. Navigate to the base directory (usually ~/jwaim).
+##### 3. Prepare build directory
 ```bash
 cd jwaim
-```
-
-##### 4. Prepare build directory
-```bash
 mkdir build && cd build
 cmake ..
 ```
 
-##### 5. Compile
+##### 4. Compile
 ```bash
 make
 ```
-##### 6. Modify settings.cfg in the build directory.
 
-##### 7. Run jwaim as superuser
+##### 5. Modify settings.cfg in the build directory.
+
+##### 6. Run jwaim as superuser
 
 ```bash 
 sudo ./jwaim
 ```
 
-##### 8. Set up required keybinds (use developer console '~')
+##### 7. Set up required keybinds (use developer console '~')
 ```
 bind mouse1 +alt2
 bind space +alt1
@@ -56,7 +53,7 @@ bind space +alt1
 
 
 NOTE:
-Please make sure you have settings.cfg in the same directory as your current working directory when you run jwaim (Step 6), otherwise libconfig will not be able to find settings.cfg.
+If settings.cfg isn't found in the binary directory jwaim will use sane defaults.
 # Cheat Features
 **BHop  
 Aim Assist  
