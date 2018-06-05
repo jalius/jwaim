@@ -10,19 +10,19 @@ https://discord.gg/59dJJYN
 
 ##### 2. compositing window manager 
 environments like GNOME and Unity have this included OR you can install a standalone window manager such as xcompmgr (as suggested by [Teklad](https://github.com/Teklad))
-# installing and running
+# Building
 ##### 1. Clone the repo
 ```bash
-git clone https://github.com/bluuman/jwaim.git/
+git clone https://github.com/Teklad/jwaim.git
 ```
 ##### 2. Install dependencies
 Debian:
 ```bash
-sudo apt-get install libboost-all-dev libx11-dev libx11-dev:i386 libxtst-dev libconfig++-dev build-essential qt5-default libqt5x11extras5-dev
+sudo apt-get install libx11-dev libx11-dev:i386 libxtst-dev libconfig++-dev build-essential qt5-default libqt5x11extras5-dev
 ```
   Arch (thanks eclip):
 ```bash
-sudo pacman -S boost-libs libx11 libxtst libconfig base-devel qt5 qt5-x11extras
+sudo pacman -S libx11 libxtst libconfig base-devel qt5 qt5-x11extras
 ```
 
 ##### 3. Navigate to the base directory (usually ~/jwaim).
@@ -30,22 +30,24 @@ sudo pacman -S boost-libs libx11 libxtst libconfig base-devel qt5 qt5-x11extras
 cd jwaim
 ```
 
-##### 4. Set up makefile with qmake
+##### 4. Prepare build directory
 ```bash
-qmake ./jwaim.pro
+mkdir build && cd build
+cmake ..
 ```
 
-##### 5. Compile program
+##### 5. Compile
 ```bash
 make
 ```
-##### 6. Rename settings_example.cfg to settings.cfg and modify settings to your liking.
+##### 6. Modify settings.cfg in the build directory.
 
 ##### 7. Run jwaim as superuser
 
 ```bash 
 sudo ./jwaim
 ```
+
 ##### 8. Set up required keybinds (use developer console '~')
 ```
 bind mouse1 +alt2
