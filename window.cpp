@@ -155,7 +155,7 @@ void qWindow::paintEvent(QPaintEvent *)
             font.setPointSize(9);
             painter.setPen(pen);
             painter.setFont(font);
-            for (int i = 0; i < spectators.size(); i++)
+            for (size_t i = 0; i < spectators.size(); i++)
             {
                 painter.drawText(60, settings::window::wind_height / 2.7 + 15 * (i + 1), spectators[i].c_str());
             }
