@@ -3,6 +3,7 @@
 
 namespace helper
 {
+
 void clampAngle(QAngle *angle)
 {
     while (angle->y > 180)
@@ -48,13 +49,29 @@ float fShootDistance(int bone)
     }
 }
 
+float random(float Min, float Max)
+{
+    return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
+}
+
+QAngle addSalt(QAngle angle, float margin) {
+    QAngle error;
+    error.x = random(-1, 1) * margin;
+    error.y = random(-1, 1) * margin;
+    error.z = random(-1, 1) * margin;
+    angle.x += error.x;
+    angle.y += error.y;
+    angle.z += error.z;
+    return angle;
+}
+
 Vector WorldToScreen(Vector &camerapos, Vector &enemy, QAngle &myvang, float FOV)
 {
     Vector point(enemy.x, enemy.z, enemy.y);
     Vector newCameraPos(camerapos.x, camerapos.z, camerapos.y);
     point -= newCameraPos;
     QAngle myVang = myvang;
-    float magical = 1.2; //just found this thru trial and error, its used to grow or shrink the focallength (for some reason it is needed on my 4:3 AND 16:9 monitor because otherwise i get inaccurate focal length). if you are using 4:3 stretched on 16:9 a value of 1.52 works best.
+    float magical = 1.52; //just found this thru trial and error, its used to grow or shrink the focallength (for some reason it is needed on my 4:3 AND 16:9 monitor because otherwise i get inaccurate focal length). if you are using 4:3 stretched on 16:9 a value of 1.52 works best.
     myVang.y += 90;
     //std::cout<<" width: "<<settings::window::wind_width<<" height: "<<settings::window::wind_height<<" ratio "<<settings::window::wind_width/settings::window::wind_height<<std::endl;
     if (FOV >= 90 && FOV < 110)
@@ -117,7 +134,7 @@ Vector WorldToScreen(Vector &camerapos, Vector &enemy, QAngle &myvang, float FOV
     return scrPos;
 }
 
-void Smoothing(QAngle *source, QAngle *target, float percentSmoothing)
+void Smoothing(QAngle *source, QAngle *target, float percentSmoothing, bool willsalt, float errormargin)
 {
     QAngle delta;
     QAngle smoothed;
@@ -129,6 +146,11 @@ void Smoothing(QAngle *source, QAngle *target, float percentSmoothing)
     float sqDistance = sqrt((delta.x * delta.x) + (delta.y * delta.y));
     smoothed.x = delta.x / (sqDistance / percentSmoothing);
     smoothed.y = delta.y / (sqDistance / percentSmoothing);
+
+    if(willsalt) {
+        smoothed = addSalt(smoothed, errormargin);
+    }
+
     float smoothedSqDistance = sqrt((smoothed.x * smoothed.x) + (smoothed.y * smoothed.y));
     if (smoothedSqDistance < sqDistance)
     {
@@ -227,9 +249,9 @@ bool IgnoreWeapon(int iWeaponID)
 }
 bool ShouldAutoShoot(int iWeaponID)
 {
-    return false;
-    /*return( iWeaponID == WEAPON_DUAL|| iWeaponID == WEAPON_FIVE7 || iWeaponID == WEAPON_GLOCK
-            || iWeaponID == WEAPON_P250_CZ75 || iWeaponID == WEAPON_TEC9 || iWeaponID == WEAPON_HKP2000 );*/
+    return( iWeaponID == WEAPON_FIVESEVEN || iWeaponID == WEAPON_GLOCK
+            || iWeaponID == WEAPON_TEC9 || iWeaponID == WEAPON_HKP2000
+            || iWeaponID == WEAPON_P250 || iWeaponID == WEAPON_USP_SILENCER || iWeaponID == WEAPON_ELITE);
 }
 bool ShouldNotRCS(int iWeaponID)
 {

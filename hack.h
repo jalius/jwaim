@@ -118,6 +118,7 @@ public:
     void trigger();
     void aim();
     void setFov();
+		void click();
     void setHands();
     void setupIsConnected();
     bool IsConnected();
@@ -143,6 +144,9 @@ public:
     std::string ShouldRadarHackToggleKey;
     std::atomic<bool> ShouldAimAssist;
     std::string ShouldAimAssistToggleKey;
+		std::atomic<bool> ShouldClick;
+    std::string ShouldClickToggleKey;
+
     //runtime set settings
     int preferredBone;
     std::vector<int> preferredBones;
@@ -150,6 +154,8 @@ public:
     float fov;
     float percentSmoothing;
     int viewFov;
+		bool willsalt;
+		float errormargin;
     bool noHands;
     bool resolver;
     bool shootFriends;
@@ -168,7 +174,7 @@ private:
     int getClosestBone(unsigned long m_pStudioBones, std::vector<int> &preferredBones, QAngle &curViewAngle, QAngle &aimPunch, Vector &myPos);
     int getLifeState(unsigned long entityPtr);
 
-    int getActiveWeaponEntityID(unsigned long entityPtr);    
+    int getActiveWeaponEntityID(unsigned long entityPtr);
 
     std::array<unsigned long, 64> readAllPlayerNamePtrs(unsigned long playerresources_adr);
     std::array<std::string,64> readAllPlayerNames(unsigned long playerresources_adr);
@@ -202,9 +208,10 @@ private:
     int keycodeESP;
     int keycodeRadarHack;
     int keycodeAim;
+		int keycodeTrigger;
+		int keycodeClick;
     unsigned char spotted;
 
-    //
     std::atomic<bool> entityInCrossHair;
 
     std::atomic<int> iWeaponID_lp;
@@ -214,6 +221,7 @@ private:
     unsigned long m_addressOfLocalPlayer;
     unsigned long m_addressOfForceAttack;
     unsigned long m_addressOfAlt1;
+		unsigned long m_iCrosshairID;
     unsigned long m_addressOfAlt2;
     unsigned long m_addressOfJump;
     unsigned long basePointerOfViewAngle;
