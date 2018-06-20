@@ -883,6 +883,10 @@ bool hack::glow()
                     g_glow[i].m_bRenderWhenUnoccluded = 0;
                     continue;
                 }
+
+                if (!glowItems && ent.m_iHealth < 1)
+                    continue;
+
                 if (ShouldRadarHack)
                 {
                     csgo.Write((void *)((unsigned long)g_glow[i].m_pEntity + offsets::m_bIsSpotted), &spotted, sizeof(unsigned char));
@@ -905,47 +909,25 @@ bool hack::glow()
 
                 g_glow[i].m_bRenderWhenOccluded = 1;
                 g_glow[i].m_bRenderWhenUnoccluded = 0;
-                int spottedByMask = 0;
-                csgo.Read((void*)g_glow[i].m_pEntity+0xf10,&spottedByMask, sizeof(int));
-                bool spottedByMe = (spottedByMask>>local.ID-1)&1;
                 if (ent.m_iTeamNum == 2 || ent.m_iTeamNum == 3)
                 {
+                    g_glow[i].m_nGlowStyle = glowStyle;
+                    g_glow[i].m_bFullBloomRender = glowBloom;
                     /*cout<<"ent ID " <<ent.ID<<" teamid "<<ent.m_iTeamNum;
                     cout<<" ent address " <<g_glow[i].m_pEntity<<endl;*/
-                    if (!legitGlow)
+                    if (ent.m_iTeamNum != teamNumber || h.shootFriends)
                     {
-                        if (ent.m_iTeamNum != teamNumber || h.shootFriends)
-                        {                                        //&&!h.shootFriends) { //teamNumber == ent.m_iTeamNum
-                            g_glow[i].m_flGlowRed = colors[0];   //spottedByMe ? colors[4] : colors[0];
-                            g_glow[i].m_flGlowGreen = colors[1]; // spottedByMe ? colors[5] : colors[1];
-                            g_glow[i].m_flGlowBlue = colors[2];  //spottedByMe  ? colors[6] : colors[2];
-                            g_glow[i].m_flGlowAlpha = colors[3];
-                            ; //spottedByMe  ? colors[7] : colors[3];
-                        }
-                        else
-                        {
-                            g_glow[i].m_flGlowRed = colors[8];
-                            g_glow[i].m_flGlowGreen = colors[9];
-                            g_glow[i].m_flGlowBlue = colors[10];
-                            g_glow[i].m_flGlowAlpha = colors[11];
-                        }
+                        g_glow[i].m_flGlowRed = colors[0];
+                        g_glow[i].m_flGlowGreen = colors[1];
+                        g_glow[i].m_flGlowBlue = colors[2];
+                        g_glow[i].m_flGlowAlpha = colors[3];
                     }
                     else
                     {
-                        if (ent.m_iTeamNum == 2)
-                        {                                       //&&!h.shootFriends) { //teamNumber == ent.m_iTeamNum
-                            g_glow[i].m_flGlowRed = 0.878431;   //spottedByMe ? colors[4] : colors[0];
-                            g_glow[i].m_flGlowGreen = 0.686275; // spottedByMe ? colors[5] : colors[1];
-                            g_glow[i].m_flGlowBlue = 0.337255;  //spottedByMe  ? colors[6] : colors[2];
-                            g_glow[i].m_flGlowAlpha = spottedByMe ? 0.6 : 0;       //spottedByMe  ? colors[7] : colors[3];
-                        }
-                        else if (ent.m_iTeamNum == 3)
-                        {
-                            g_glow[i].m_flGlowRed = 0.447059;
-                            g_glow[i].m_flGlowGreen = 0.607843;
-                            g_glow[i].m_flGlowBlue = 0.866667;
-                            g_glow[i].m_flGlowAlpha = spottedByMe ? 0.6 : 0;
-                        }
+                        g_glow[i].m_flGlowRed = colors[8];
+                        g_glow[i].m_flGlowGreen = colors[9];
+                        g_glow[i].m_flGlowBlue = colors[10];
+                        g_glow[i].m_flGlowAlpha = colors[11];
                     }
                 }
             }
@@ -1365,7 +1347,9 @@ bool hack::init()
     hack::percentSmoothing = ::atof(helper::getConfigValue("aim_smooth", cfg).c_str());
     hack::noHands = ::atof(helper::getConfigValue("no_hands", cfg).c_str());
     hack::shootFriends = ::atof(helper::getConfigValue("shoot_friends", cfg).c_str());
-    hack::legitGlow = ::atof(helper::getConfigValue("legit_glow", cfg).c_str());
+    hack::glowStyle = ::atof(helper::getConfigValue("glow_style", cfg).c_str());
+    hack::glowBloom = ::atof(helper::getConfigValue("glow_bloom", cfg).c_str());
+    hack::glowItems = ::atof(helper::getConfigValue("glow_items", cfg).c_str());
     hack::drawrcsCrosshair = ::atof(helper::getConfigValue("rcs_crosshair", cfg).c_str());
     hack::staticCrosshair = ::atof(helper::getConfigValue("static_crosshair", cfg).c_str());
     hack::aimbotMaxBullets = ::atof(helper::getConfigValue("max_aimbot_bullets", cfg).c_str());
