@@ -22,7 +22,7 @@ sudo apt-get install libboost-all-dev libx11-dev libx11-dev:i386 libxtst-dev lib
 ```
   Arch (thanks eclip):
 ```bash
-sudo pacman -S boost-libs libx11 libxtst libconfig base-devel qt5 qt5-x11extras
+sudo pacman -S boost-libs booost libx11 libxtst libconfig base-devel qt5 qt5-x11extras
 ```
 
 ##### 3. Navigate to the base directory (usually ~/jwaim).
