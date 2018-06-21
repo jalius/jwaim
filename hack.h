@@ -124,7 +124,7 @@ public:
     void setupIsConnected();
     bool IsConnected();
     bool totalHitsIncreased();
-    double *Colors();
+    const std::array<double, 24> &Colors();
     //settings
     Config cfg;
     //togglable settings
@@ -197,7 +197,7 @@ private:
     remote::MapModuleMemoryRegion client;
     remote::MapModuleMemoryRegion engine;
 
-    double* colors;
+    std::array<double, 24> colors;
     int keycodeBhop;
     int keycodeGlow;
     int keycodeNoFlash;

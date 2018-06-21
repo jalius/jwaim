@@ -33,7 +33,7 @@ bool hack::IsConnected()
 {
     return isConnected;
 }
-double *hack::Colors()
+const std::array<double, 24> &hack::Colors()
 {
     return colors;
 }
@@ -1163,13 +1163,13 @@ bool hack::init()
     double secondaryBlue_esp = ::atof(helper::getConfigValue("secondaryBlue_esp", cfg).c_str());
     double secondaryAlpha_esp = ::atof(helper::getConfigValue("secondaryAlpha_esp", cfg).c_str());
 
-    colors = new double[24]{
+    colors = {
         enemyRed, enemyGreen, enemyBlue, enemyAlpha,
         enemyInCrosshairRed, enemyInCrosshairGreen, enemyInCrosshairBlue, enemyInCrosshairAlpha,
         allyRed, allyGreen, allyBlue, allyAlpha,
         enemyRed_esp, enemyGreen_esp, enemyBlue_esp, enemyAlpha_esp,
         allyRed_esp, allyGreen_esp, allyBlue_esp, allyAlpha_esp,
-        secondaryRed_esp, secondaryGreen_esp, secondaryBlue_esp, secondaryAlpha_esp};
+        secondaryRed_esp, secondaryGreen_esp, secondaryBlue_esp, secondaryAlpha_esp };
 
     while (true)
     {
