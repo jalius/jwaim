@@ -1,5 +1,7 @@
 #include "window.h"
 
+#include "jwsettings.h"
+
 int i = 0;
 qWindow::qWindow(QWidget *parent) : QWidget(parent)
 { 
@@ -19,6 +21,7 @@ qWindow::qWindow(QWidget *parent) : QWidget(parent)
 
 void qWindow::paintEvent(QPaintEvent *)
 {
+    auto& colors = JWSettings::getInstance().Colors();
     const QColor redFalse(255, 050, 05);
     const QColor greenTrue(050, 255, 05);
     QPainter painter(this);
@@ -115,7 +118,7 @@ void qWindow::paintEvent(QPaintEvent *)
         }
         if (!(rcsCross.x == 0 && rcsCross.y == 0)&&h.drawrcsCrosshair)
         {
-            pen.setColor(QColor(h.Colors()[20], h.Colors()[21], h.Colors()[22], h.Colors()[23]));
+            pen.setColor(QColor(colors[20], colors[21], colors[22], colors[23]));
             pen.setWidthF(1.8);
             painter.setPen(pen);
             painter.drawLine(rcsCross.x + 5, rcsCross.y, rcsCross.x - 5, rcsCross.y);
@@ -123,7 +126,7 @@ void qWindow::paintEvent(QPaintEvent *)
         }
         else if (h.staticCrosshair)
         {
-            pen.setColor(QColor(h.Colors()[20], h.Colors()[21], h.Colors()[22], h.Colors()[23]));
+            pen.setColor(QColor(colors[20], colors[21], colors[22], colors[23]));
             pen.setWidthF(1.8);
             painter.setPen(pen);
             int middleX = settings::window::wind_width / 2;
@@ -152,7 +155,7 @@ void qWindow::paintEvent(QPaintEvent *)
             font.setPointSize(9);
             painter.setPen(pen);
             painter.setFont(font);
-            for (int i = 0; i < spectators.size(); i++)
+            for (size_t i = 0; i < spectators.size(); i++)
             {
                 painter.drawText(60, settings::window::wind_height / 2.7 + 15 * (i + 1), spectators[i].c_str());
             }
@@ -168,6 +171,7 @@ void qWindow::callback()
 }
 void qWindow::drawESPBoxes(std::array<EntityToScreen, 64> &entitiesToScreen, QPainter &painter, QPen &pen, QFont &font)
 {
+    auto& colors = JWSettings::getInstance().Colors();
     font.setPointSize(7);
     font.setBold(false);
     pen.setWidth(2);
@@ -187,17 +191,17 @@ void qWindow::drawESPBoxes(std::array<EntityToScreen, 64> &entitiesToScreen, QPa
             }
             if (entitiesToScreen[i].myTeam && !h.shootFriends)
             {
-                pen.setColor(QColor(h.Colors()[16] * 255, h.Colors()[17] * 255, h.Colors()[18] * 255, 255));
+                pen.setColor(QColor(colors[16] * 255, colors[17] * 255, colors[18] * 255, 255));
                 painter.setPen(pen);
             }
             else
             {
-                pen.setColor(QColor(h.Colors()[12] * 255, h.Colors()[13] * 255, h.Colors()[14] * 255, 255));
+                pen.setColor(QColor(colors[12] * 255, colors[13] * 255, colors[14] * 255, 255));
                 painter.setPen(pen);
             }
             //qInfo() << "positions[i].x "<<positions[i].second.x<<" positions[i].y "<<positions[i].second.y;
             painter.drawRect(entitiesToScreen[i].origin.x - fwidth / 2, entitiesToScreen[i].origin.y, fwidth, fheight);
-            pen.setColor(QColor(h.Colors()[20], h.Colors()[21], h.Colors()[22], h.Colors()[23]));
+            pen.setColor(QColor(colors[20], colors[21], colors[22], colors[23]));
             painter.setPen(pen);
             font.setBold(true);
             font.setFamily("LiberationSansBold");
@@ -238,7 +242,7 @@ void qWindow::drawESPBoxes(std::array<EntityToScreen, 64> &entitiesToScreen, QPa
         else if (entitiesToScreen[i].origin.z == -1 && !entitiesToScreen[i].myTeam)
         {
             //draws a line to the entity that is behind me (origin z ==-1 is set earlier if they are behind me)
-            pen.setColor(QColor(h.Colors()[20], h.Colors()[21], h.Colors()[22], h.Colors()[23]));
+            pen.setColor(QColor(colors[20], colors[21], colors[22], colors[23]));
             painter.setPen(pen);
             painter.drawLine(entitiesToScreen[i].origin.x, entitiesToScreen[i].origin.y, settings::window::wind_width * settings::window::cofLineTetherX, settings::window::wind_height * settings::window::cofLineTetherY);
         }

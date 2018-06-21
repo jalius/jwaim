@@ -19,8 +19,6 @@
 #include <mutex>
 #include <math.h>
 #include <memory.h>
-#include <boost/thread/locks.hpp>
-#include <boost/thread/shared_mutex.hpp>
 
 #include "offsets.h"
 #include "remote.h"
@@ -30,7 +28,6 @@
 
 
 using namespace std;
-using namespace libconfig;
 
 #define TEAM_SPECTATOR          1
 
@@ -124,9 +121,6 @@ public:
     void setupIsConnected();
     bool IsConnected();
     bool totalHitsIncreased();
-    double *Colors();
-    //settings
-    Config cfg;
     //togglable settings
 
     std::atomic<bool> ShouldGlow;
@@ -183,7 +177,7 @@ private:
     void readEntities(std::array<EntityInfo,64> &rentities);
     void writeEntities(std::array<EntityInfo,64> &wentities);
 
-    boost::shared_mutex entities_access;
+    std::mutex entities_access;
     std::array<EntityInfo,64> entities;
 
     std::array<std::pair<Vector,Vector>,64> screenPositions;
@@ -197,7 +191,6 @@ private:
     remote::MapModuleMemoryRegion client;
     remote::MapModuleMemoryRegion engine;
 
-    double* colors;
     int keycodeBhop;
     int keycodeGlow;
     int keycodeNoFlash;
