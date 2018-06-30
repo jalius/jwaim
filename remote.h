@@ -45,7 +45,7 @@ namespace remote {
 
 		unsigned long client_start;
 
-		void* find(Handle handle, const char* data, const char* pattern);
+		uintptr_t find(Handle handle, const char* data, const char* pattern);
 	};
 
 	class Handle {
@@ -67,7 +67,7 @@ namespace remote {
 		bool Write(void* address, void* buffer, size_t size);
 		bool Read(void* address, void* buffer, size_t size);
 
-		unsigned long GetCallAddress(void* address);
+		uintptr_t GetCallAddress(uintptr_t address);
         unsigned long GetShortJmpAddress(void* address);
 
 		MapModuleMemoryRegion* GetRegionOfAddress(void* address);

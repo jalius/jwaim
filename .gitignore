@@ -28,6 +28,7 @@ Makefile*
 *.app
 moc_*.cpp
 moc_*.h
+mocs_*.cpp
 ui_*.h
 qrc_*.cpp
 Thumbs.db
@@ -77,3 +78,14 @@ jwaim
 *.user
 .vscode
 settings.cfg
+
+#cmake files and folders
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
