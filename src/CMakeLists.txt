@@ -1,5 +1,20 @@
-set (CMAKE_CXX_FLAGS "-Wall -g -lpthread -pthread -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
-add_executable(jwaim main.cpp jwaim.cpp remote_process_interface.cpp glowhack.cpp aimbot.cpp process_utils.cpp)
+# Check for necessary build packages here
+find_package(Threads)
+
+add_executable(jwaim
+    aimbot.cpp
+    glowhack.cpp
+    jwaim.cpp
+    main.cpp
+    process_utils.cpp
+    remote_process_interface.cpp
+)
+
+# Link build packages here
+target_link_libraries(jwaim
+    ${CMAKE_THREAD_LIBS_INIT}
+)
