@@ -301,7 +301,7 @@ std::vector<pattern_byte> remote_process::convert_ida_style_pattern(std::string 
 {
     std::array<char, 23> constexpr byte_or_wildcard_chars {'0','1','2','3','4','5','6','7','8','9','A','a','B','b','C','c','D','d','E','e','F','f','?'};
     pattern.erase( //remove chars not part of hex or wildcard (spaces, etc)
-        std::remove_if(pattern.begin(), pattern.end(), [](char x)
+        std::remove_if(pattern.begin(), pattern.end(), [&byte_or_wildcard_chars](char x)
             {   
                 return std::find(byte_or_wildcard_chars.begin(), byte_or_wildcard_chars.end(), x) == byte_or_wildcard_chars.end(); // if char x not part of hex or wildcard (?), then remove it
             }
