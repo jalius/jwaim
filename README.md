@@ -1,3 +1,7 @@
+# * **Cheat Broken as of 7/6/18** *
+I'll be working on the rewrite branch (master-rewrite), so there will likely be no fixes to the current branch, unless a community member feels so inclined.
+
+In the meantime, read about [the CS:GO update](http://blog.counter-strike.net/index.php/2018/07/20556/) that broke our cheat and stay legit!
 # jwaim - CS:GO multi-cheat for Linux
 ![Alt text](https://i.imgur.com/xmjycBr.jpg "another screenshot")
 
