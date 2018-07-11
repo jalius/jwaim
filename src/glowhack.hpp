@@ -2,6 +2,7 @@
 #define GLOWHACK_HPP
 #include <cstdint>
 class remote_process;
+class pattern_scanner;
 
 template <class T>
 class CUtlVector
@@ -78,5 +79,6 @@ class glowhack
 
   private:
     remote_process const &csgo_process;
+    pattern_scanner const &csgo_pattern_scanner;
 };
 #endif

@@ -21,27 +21,25 @@ struct pattern_byte
     pattern_byte_action action;
     char byte;
 };
-class memory_region
+struct memory_region
 {
-private:
-		// Memory
-		uintptr_t start;
-		uintptr_t end;
+    // Memory
+    uintptr_t start;
+    uintptr_t end;
 
-		// Permissions
-		bool readable;
-		bool writable;
-		bool executable;
-		bool shared;
+    // Permissions
+    bool readable;
+    bool writable;
+    bool executable;
+    bool shared;
 
-		// File data
-		ptrdiff_t offset;
-		unsigned char device_major;
-		unsigned char device_minor;
-		unsigned long inode_file_num;
-		std::string path_name;
-		std::string file_name;
-friend class remote_process;
+    // File data
+    ptrdiff_t offset;
+    unsigned char device_major;
+    unsigned char device_minor;
+    unsigned long inode_file_num;
+    std::string path_name;
+    std::string file_name;
 };
 class remote_process
 {
@@ -55,16 +53,11 @@ public:
     bool write_multi(std::vector<iovec> const &local_iov, std::vector<iovec> const &remote_iov) const;
     bool read_single(uintptr_t address, size_t size, void *buf_out) const;
     bool write_single(uintptr_t address, size_t size, void *buf_in) const;
-    uintptr_t find_pattern_in_module_with_name(std::string module_name, std::string data) const;
-    uintptr_t get_relative_call_address(uintptr_t call_begin) const;
+    memory_region const get_memory_region_by_name(std::string region_name) const;
 private:
     std::vector<memory_region> parse_maps();
     const uint32_t proc_id {0};
     std::vector<memory_region> regions;
-    static uint32_t get_remote_process_id_by_name(std::string proc_name);
-    static std::string get_symlink_target(std::string target);
-    static std::vector<pattern_byte> convert_ida_style_pattern(std::string pattern);
-    uintptr_t find_pattern_in_module(memory_region const &module, std::string data, size_t offset = 0) const;
-    bool parse_maps_line(std::string line, memory_region &memory_region_out);
+
 };
 #endif

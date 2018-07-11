@@ -1,6 +1,6 @@
 #ifndef JWAIM_HPP
 #define JWAIM_HPP
-#include "remote_process_interface.hpp"
+#include "remote_process.hpp"
 
 class jwaim
 {
