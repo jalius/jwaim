@@ -74,6 +74,6 @@ class glowhack
 
   private:
     remote_process const &csgo_process;
-    pattern_scanner const &csgo_pattern_scanner;
+    pattern_scanner const csgo_pattern_scanner;
 };
 #endif
