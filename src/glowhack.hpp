@@ -17,16 +17,11 @@ class CUtlVector
 
 struct GlowObjectDefinition_t
 {
-    /*bool ShouldDraw(int nSlot) const
+    bool ShouldDraw(int nSlot) const
     {
         return m_pEntity && (m_nSplitScreenSlot == -1 || m_nSplitScreenSlot == nSlot) && (m_bRenderWhenOccluded || m_bRenderWhenUnoccluded);
     }
-
-    bool IsUnused() const
-    {
-        return m_nNextFreeSlot != GlowObjectDefinition_t::ENTRY_IN_USE;
-    }
-
+    
     long writeStart()
     {
         return (long(&(this)->m_flGlowRed) - long(this));
@@ -35,7 +30,7 @@ struct GlowObjectDefinition_t
     long writeEnd()
     {
         return (long(&(this)->m_nNextFreeSlot) - long(this));
-    }*/
+    }
     //FIXME: Figure out some of the missing values
     void *m_pEntity;                  //0x0000
     float m_flGlowRed;                //0x0008
